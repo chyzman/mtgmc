@@ -1,4 +1,4 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
 import com.chyzman.mtgmc.util.StringIdentifiableEndecUtils;
 import io.wispforest.endec.Endec;
@@ -9,7 +9,8 @@ public enum MtgColor implements StringIdentifiable {
     BLUE("U"),
     BLACK("B"),
     RED("R"),
-    GREEN("G");
+    GREEN("G"),
+    COLORLESS("C");
 
     public static final Endec<MtgColor> ENDEC = StringIdentifiableEndecUtils.createEndec(MtgColor.class);
     private final String name;

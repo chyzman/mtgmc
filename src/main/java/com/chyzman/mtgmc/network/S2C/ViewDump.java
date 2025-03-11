@@ -1,4 +1,4 @@
-package com.chyzman.schema.network.S2C;
+package com.chyzman.mtgmc.network.S2C;
 
 import net.minecraft.text.Text;
 

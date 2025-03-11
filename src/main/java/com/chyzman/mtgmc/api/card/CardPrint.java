@@ -1,16 +1,14 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
+import com.chyzman.mtgmc.api.set.MtgSetType;
 import com.chyzman.mtgmc.util.ExtraEndecs;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.StructEndec;
 import io.wispforest.endec.impl.BuiltInEndecs;
-import io.wispforest.endec.impl.StructEndecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface CardPrint {
     @Nullable
@@ -38,7 +36,7 @@ public interface CardPrint {
     default boolean digital() {return cardPrintData().digital();}
 
     @NotNull
-    default CardFinish finish() {return cardPrintData().finish();}
+    default List<CardFinish> finishes() {return cardPrintData().finishes();}
 
     @Nullable
     default String flavorName() {return cardPrintData().flavorName();}
@@ -60,7 +58,7 @@ public interface CardPrint {
     default boolean highresImage() {return cardPrintData().highresImage();}
 
     @Nullable
-    default String illustrationId() {return cardPrintData().illustrationId();}
+    default UUID illustrationId() {return cardPrintData().illustrationId();}
 
     @NotNull
     default CardImageStatus imageStatus() {return cardPrintData().imageStatus();}
@@ -100,7 +98,7 @@ public interface CardPrint {
     default Map<String, String> relatedUris() {return cardPrintData().relatedUris();}
 
     @NotNull
-    default Date releasedAt() {return cardPrintData().releasedAt();}
+    default String releasedAt() {return cardPrintData().releasedAt();}
 
     default boolean reprint() {return cardPrintData().reprint();}
 
@@ -139,37 +137,37 @@ public interface CardPrint {
 
     StructEndec<CardPrintImpl> ENDEC = ExtraEndecs.of(
             Endec.STRING.optionalFieldOf("artist", CardPrint::artist, (String) null),
-            Endec.STRING.listOf().fieldOf("artist_ids", CardPrint::artistIds),
-            Endec.INT.listOf().fieldOf("attribution_line", CardPrint::attributionLights),
+            Endec.STRING.listOf().optionalFieldOf("artist_ids", CardPrint::artistIds, (List<String>) null),
+            Endec.INT.listOf().optionalFieldOf("attribution_line", CardPrint::attributionLights, (List<Integer>) null),
             Endec.BOOLEAN.fieldOf("booster", CardPrint::booster),
             Endec.STRING.fieldOf("border_color", CardPrint::borderColor),
             Endec.STRING.fieldOf("card_back_id", CardPrint::cardBackId),
             Endec.STRING.fieldOf("collector_number", CardPrint::collectorNumber),
-            Endec.BOOLEAN.fieldOf("content_warning", CardPrint::contentWarning),
+            Endec.BOOLEAN.optionalFieldOf("content_warning", CardPrint::contentWarning, false),
             Endec.BOOLEAN.fieldOf("digital", CardPrint::digital),
-            CardFinish.ENDEC.fieldOf("finish", CardPrint::finish),
+            CardFinish.ENDEC.listOf().optionalFieldOf("finishes", CardPrint::finishes, ArrayList::new),
             Endec.STRING.optionalFieldOf("flavor_name", CardPrint::flavorName, (String) null),
             Endec.STRING.optionalFieldOf("flavor_text", CardPrint::flavorText, (String) null),
             CardFrame.ENDEC.fieldOf("frame", CardPrint::frame),
-            CardFrameEffect.ENDEC.listOf().fieldOf("frame_effects", CardPrint::frameEffects),
+            CardFrameEffect.ENDEC.listOf().optionalFieldOf("frame_effects", CardPrint::frameEffects, ArrayList::new),
             Endec.BOOLEAN.fieldOf("full_art", CardPrint::fullArt),
             CardGames.ENDEC.listOf().fieldOf("games", CardPrint::games),
             Endec.BOOLEAN.fieldOf("highres_image", CardPrint::highresImage),
-            Endec.STRING.optionalFieldOf("illustration_id", CardPrint::illustrationId, (String) null),
+            BuiltInEndecs.UUID.optionalFieldOf("illustration_id", CardPrint::illustrationId, (UUID) null),
             CardImageStatus.ENDEC.fieldOf("image_status", CardPrint::imageStatus),
-            CardImageUris.ENDEC.fieldOf("image_uris", CardPrint::imageUris),
+            CardImageUris.ENDEC.optionalFieldOf("image_uris", CardPrint::imageUris, (CardImageUris) null),
             Endec.BOOLEAN.fieldOf("oversized", CardPrint::oversized),
-            CardPreview.ENDEC.fieldOf("preview", CardPrint::preview),
+            CardPreview.ENDEC.optionalFieldOf("preview", CardPrint::preview, (CardPreview) null),
             CardPrices.ENDEC.fieldOf("prices", CardPrint::prices),
             Endec.STRING.optionalFieldOf("printed_name", CardPrint::printedName, (String) null),
             Endec.STRING.optionalFieldOf("printed_text", CardPrint::printedText, (String) null),
             Endec.STRING.optionalFieldOf("printed_type_line", CardPrint::printedTypeLine, (String) null),
             Endec.BOOLEAN.fieldOf("promo", CardPrint::promo),
-            CardPromoType.ENDEC.listOf().fieldOf("promo_types", CardPrint::promoTypes),
-            Endec.STRING.mapOf().fieldOf("purchase_uris", CardPrint::purchaseUris),
+            CardPromoType.ENDEC.listOf().optionalFieldOf("promo_types", CardPrint::promoTypes, (List<CardPromoType>) null),
+            Endec.STRING.mapOf().optionalFieldOf("purchase_uris", CardPrint::purchaseUris, (Map<String, String>) null),
             CardRarity.ENDEC.fieldOf("rarity", CardPrint::rarity),
             Endec.STRING.mapOf().fieldOf("related_uris", CardPrint::relatedUris),
-            BuiltInEndecs.DATE.fieldOf("released_at", CardPrint::releasedAt),
+            Endec.STRING.fieldOf("released_at", CardPrint::releasedAt),
             Endec.BOOLEAN.fieldOf("reprint", CardPrint::reprint),
             Endec.STRING.fieldOf("scryfall_set_uri", CardPrint::scryfallSetUri),
             CardSecurityStamp.ENDEC.optionalFieldOf("security_stamp", CardPrint::securityStamp, (CardSecurityStamp) null),
@@ -199,7 +197,7 @@ public interface CardPrint {
             @NotNull String collectorNumber,
             boolean contentWarning,
             boolean digital,
-            @NotNull CardFinish finish,
+            @NotNull List<CardFinish> finishes,
             @Nullable String flavorName,
             @Nullable String flavorText,
             @NotNull CardFrame frame,
@@ -207,7 +205,7 @@ public interface CardPrint {
             boolean fullArt,
             @NotNull List<CardGames> games,
             boolean highresImage,
-            @Nullable String illustrationId,
+            @Nullable UUID illustrationId,
             @NotNull CardImageStatus imageStatus,
             @NotNull CardImageUris imageUris,
             boolean oversized,
@@ -221,7 +219,7 @@ public interface CardPrint {
             @NotNull Map<String, String> purchaseUris,
             @NotNull CardRarity rarity,
             @NotNull Map<String, String> relatedUris,
-            @NotNull Date releasedAt,
+            @NotNull String releasedAt,
             boolean reprint,
             @NotNull String scryfallSetUri,
             @Nullable CardSecurityStamp securityStamp,

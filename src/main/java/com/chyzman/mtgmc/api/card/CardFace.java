@@ -1,14 +1,11 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
 import com.chyzman.mtgmc.util.ExtraEndecs;
 import io.wispforest.endec.Endec;
-import io.wispforest.endec.impl.StructEndecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
 
 public record CardFace(
         @Nullable String artist,
@@ -38,8 +35,8 @@ public record CardFace(
             Endec.STRING.optionalFieldOf("artist", CardFace::artist, (String) null),
             Endec.STRING.optionalFieldOf("artist_id", CardFace::artistId, (String) null),
             Endec.INT.optionalFieldOf("cmc", CardFace::cmc, (Integer) null),
-            MtgColor.ENDEC.listOf().fieldOf("color_indicator", CardFace::colorIndicators),
-            MtgColor.ENDEC.listOf().fieldOf("colors", CardFace::colors),
+            MtgColor.ENDEC.listOf().optionalFieldOf("color_indicator", CardFace::colorIndicators, (List<MtgColor>) null),
+            MtgColor.ENDEC.listOf().optionalFieldOf("colors", CardFace::colors, (List<MtgColor>) null),
             Endec.STRING.optionalFieldOf("defense", CardFace::defense, (String) null),
             Endec.STRING.optionalFieldOf("flavor_text", CardFace::flavorText, (String) null),
             Endec.STRING.optionalFieldOf("illustration_id", CardFace::illustrationId, (String) null),

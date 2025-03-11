@@ -1,6 +1,5 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
-import com.chyzman.mtgmc.util.ExtraEndecs;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.StructEndec;
 import io.wispforest.endec.impl.BuiltInEndecs;
@@ -8,9 +7,8 @@ import io.wispforest.endec.impl.StructEndecBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 public interface CardBase {
 
@@ -21,7 +19,7 @@ public interface CardBase {
     default Integer cardmarketId() {return cardBaseData().cardmarketId();}
 
     @NotNull
-    default String id() {return cardBaseData().id();}
+    default UUID id() {return cardBaseData().id();}
 
     @NotNull
     default CardLanguage lang() {return cardBaseData().lang();}
@@ -35,7 +33,7 @@ public interface CardBase {
     @Nullable
     default Integer mtgoId() {return cardBaseData().mtgoId();}
 
-    @Nullable
+    @NotNull
     default List<Integer> multiverseIds() {return cardBaseData().multiverseIds();}
 
     @Nullable
@@ -62,7 +60,7 @@ public interface CardBase {
     StructEndec<CardBaseImpl> ENDEC = StructEndecBuilder.of(
             Endec.INT.optionalFieldOf("arena_id", CardBase::arenaId, (Integer) null),
             Endec.INT.optionalFieldOf("cardmarket_id", CardBase::cardmarketId, (Integer) null),
-            Endec.STRING.fieldOf("id", CardBase::id),
+            BuiltInEndecs.UUID.fieldOf("id", CardBase::id),
             CardLanguage.ENDEC.fieldOf("lang", CardBase::lang),
             CardLayout.ENDEC.fieldOf("layout", CardBase::layout),
             Endec.INT.optionalFieldOf("mtgo_foil_id", CardBase::mtgoFoilId, (Integer) null),
@@ -83,12 +81,12 @@ public interface CardBase {
     record CardBaseImpl(
             @Nullable Integer arenaId,
             @Nullable Integer cardmarketId,
-            @NotNull String id,
+            @NotNull UUID id,
             @NotNull CardLanguage lang,
             @NotNull CardLayout layout,
             @Nullable Integer mtgoFoilId,
             @Nullable Integer mtgoId,
-            @Nullable List<Integer> multiverseIds,
+            @NotNull List<Integer> multiverseIds,
             @Nullable String oracleId,
             @NotNull String printsSearchUri,
             @NotNull String rulingsUri,

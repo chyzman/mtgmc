@@ -1,4 +1,4 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
 import com.chyzman.mtgmc.util.ExtraEndecs;
 import io.wispforest.endec.Endec;
@@ -6,6 +6,7 @@ import io.wispforest.endec.StructEndec;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface CardGameplay {
@@ -75,27 +76,27 @@ public interface CardGameplay {
     default String typeLine() {return cardGameplayData().typeLine();}
 
     StructEndec<CardGameplayImpl> ENDEC = ExtraEndecs.of(
-            MtgRelatedCard.ENDEC.listOf().fieldOf("all_parts", CardGameplay::allParts),
-            CardFace.ENDEC.listOf().fieldOf("card_faces", CardGameplay::cardFaces),
+            MtgRelatedCard.ENDEC.listOf().optionalFieldOf("all_parts", CardGameplay::allParts, ArrayList::new),
+            CardFace.ENDEC.listOf().optionalFieldOf("card_faces", CardGameplay::cardFaces, ArrayList::new),
             Endec.INT.fieldOf("cmc", CardGameplay::cmc),
             MtgColor.ENDEC.listOf().fieldOf("color_identity", CardGameplay::colorIdentity),
-            MtgColor.ENDEC.listOf().fieldOf("color_indicator", CardGameplay::colorIndicator),
-            MtgColor.ENDEC.listOf().fieldOf("colors", CardGameplay::colors),
-            Endec.STRING.fieldOf("defense", CardGameplay::defense),
-            Endec.INT.fieldOf("edhrec_rank", CardGameplay::edhrecRank),
-            Endec.STRING.fieldOf("hand_modifier", CardGameplay::handModifier),
+            MtgColor.ENDEC.listOf().optionalFieldOf("color_indicator", CardGameplay::colorIndicator, (List<MtgColor>) null),
+            MtgColor.ENDEC.listOf().optionalFieldOf("colors", CardGameplay::colors, (List<MtgColor>) null),
+            Endec.STRING.optionalFieldOf("defense", CardGameplay::defense, (String) null),
+            Endec.INT.optionalFieldOf("edhrec_rank", CardGameplay::edhrecRank, (Integer) null),
+            Endec.STRING.optionalFieldOf("hand_modifier", CardGameplay::handModifier, (String) null),
             Endec.STRING.listOf().fieldOf("keywords", CardGameplay::keywords),
             CardLegalities.ENDEC.fieldOf("legalities", CardGameplay::legalities),
-            Endec.STRING.fieldOf("life_modifier", CardGameplay::lifeModifier),
-            Endec.STRING.fieldOf("loyalty", CardGameplay::loyalty),
-            Endec.STRING.fieldOf("mana_cost", CardGameplay::manaCost),
+            Endec.STRING.optionalFieldOf("life_modifier", CardGameplay::lifeModifier, (String) null),
+            Endec.STRING.optionalFieldOf("loyalty", CardGameplay::loyalty, (String) null),
+            Endec.STRING.optionalFieldOf("mana_cost", CardGameplay::manaCost, (String) null),
             Endec.STRING.fieldOf("name", CardGameplay::name),
-            Endec.STRING.fieldOf("oracle_text", CardGameplay::oracleText),
-            Endec.INT.fieldOf("penny_rank", CardGameplay::pennyRank),
-            Endec.STRING.fieldOf("power", CardGameplay::power),
-            MtgColor.ENDEC.listOf().fieldOf("produced_mana", CardGameplay::producedMana),
-            Endec.BOOLEAN.fieldOf("reserved", CardGameplay::reserved),
-            Endec.STRING.fieldOf("toughness", CardGameplay::toughness),
+            Endec.STRING.optionalFieldOf("oracle_text", CardGameplay::oracleText, (String) null),
+            Endec.INT.optionalFieldOf("penny_rank", CardGameplay::pennyRank, (Integer) null),
+            Endec.STRING.optionalFieldOf("power", CardGameplay::power, (String) null),
+            MtgColor.ENDEC.listOf().optionalFieldOf("produced_mana", CardGameplay::producedMana, ArrayList::new),
+            Endec.BOOLEAN.optionalFieldOf("reserved", CardGameplay::reserved, false),
+            Endec.STRING.optionalFieldOf("toughness", CardGameplay::toughness, (String) null),
             Endec.STRING.fieldOf("type_line", CardGameplay::typeLine),
             CardGameplayImpl::new
     );

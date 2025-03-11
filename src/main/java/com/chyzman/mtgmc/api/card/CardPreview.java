@@ -1,4 +1,4 @@
-package com.chyzman.mtgmc.card.api;
+package com.chyzman.mtgmc.api.card;
 
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.impl.BuiltInEndecs;
@@ -9,14 +9,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Date;
 
 public record CardPreview(
-        @NotNull String source,
-        @NotNull String sourceUri,
-        @NotNull Date previewedAt
-        ) {
+        @Nullable String source,
+        @Nullable String sourceUri,
+        @Nullable String previewedAt
+) {
     public static final Endec<CardPreview> ENDEC = StructEndecBuilder.of(
-            Endec.STRING.fieldOf("source", CardPreview::source),
-            Endec.STRING.fieldOf("sourceUri", CardPreview::sourceUri),
-            BuiltInEndecs.DATE.fieldOf("previewedAt", CardPreview::previewedAt),
-            CardPreview::new
-    );
+            Endec.STRING.optionalFieldOf("source", CardPreview::source, (String) null),
+            Endec.STRING.optionalFieldOf("sourceUri",CardPreview::sourceUri, (String) null),
+            Endec.STRING.optionalFieldOf("previewedAt",CardPreview::previewedAt, (String) null),
+    CardPreview::new
+            );
 }

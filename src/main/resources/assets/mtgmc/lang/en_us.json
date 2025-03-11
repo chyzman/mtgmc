@@ -1,0 +1,5 @@
+{
+  "command.mtgmc.test.fail.card.none": "No card found with name \"%s\"",
+  "ui.copy": "Copy to clipboard",
+  "ui.copy.success": "Copied to clipboard"
+}

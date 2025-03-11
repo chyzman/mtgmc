@@ -14,10 +14,10 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.chyzman.mtgmc.client.MtgmcClient"
+      "com.chyzman.mtgmc.client.MtgMcClient"
     ],
     "main": [
-      "com.chyzman.mtgmc.Mtgmc"
+      "com.chyzman.mtgmc.MtgMc"
     ]
   },
 

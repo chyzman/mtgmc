@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StringRepresentableEndecUtils {
+public class StringIdentifiableEndecUtils {
     private static final Map<Class<? extends Enum>, Lookup<?>> CACHED_LOOKUPS = new HashMap<>();
 
     @Nullable
@@ -27,7 +27,7 @@ public class StringRepresentableEndecUtils {
             for (int i = 0; i < constants.length; i++) {
                 var enumConstant = constants[i];
 
-                serializedNames.put(enumConstant.getSerializedName(), enumConstant);
+                serializedNames.put(enumConstant.asString(), enumConstant);
                 enumConstantToIndex.put(enumConstant, i);
             }
 
@@ -38,7 +38,7 @@ public class StringRepresentableEndecUtils {
     public static <T extends Enum<T> & StringIdentifiable> Endec<T> createEndec(Class<T> clazz) {
         Lookup<T> lookup = getOrCreateLookup(clazz);
 
-        return Endec.ifAttr(SerializationAttributes.HUMAN_READABLE, Endec.STRING.xmap(lookup::getEntry, StringIdentifiable::getSerializedName))
+        return Endec.ifAttr(SerializationAttributes.HUMAN_READABLE, Endec.STRING.xmap(lookup::getEntry, StringIdentifiable::asString))
                 .orElse(Endec.VAR_INT.xmap(lookup::getEntry, lookup.entryToIndex()::getInt));
     }
 

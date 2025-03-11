@@ -1,4 +1,4 @@
-package com.chyzman.schema.screen.impl;
+package com.chyzman.mtgmc.screen;
 
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;
@@ -69,10 +69,10 @@ public class DumpScreen extends BaseOwoScreen<FlowLayout> {
                                                 Sizing.fill(),
                                                 Sizing.fixed(24)
                                         ).child(Components.button(
-                                                                Text.translatable("ui.schema.copy"),
+                                                                Text.translatable("ui.copy"),
                                                                 component -> {
                                                                     MinecraftClient.getInstance().keyboard.setClipboard(dump.getString());
-                                                                    MinecraftClient.getInstance().player.sendMessage(Text.translatable("ui.schema.copy.success"), true);
+                                                                    MinecraftClient.getInstance().player.sendMessage(Text.translatable("ui.copy.success"), true);
                                                                 }
                                                         )
                                                         .horizontalSizing(Sizing.fill(50))
