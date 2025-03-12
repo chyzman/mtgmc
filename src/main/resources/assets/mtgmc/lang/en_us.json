@@ -1,5 +1,10 @@
 {
-  "command.mtgmc.test.fail.card.none": "No card found with name \"%s\"",
+  "item.mtgmc.card": "Card",
+  "item.mtgmc.card.unknown": "Unknown Card",
+
   "ui.copy": "Copy to clipboard",
-  "ui.copy.success": "Copied to clipboard"
+  "ui.copy.success": "Copied to clipboard",
+
+  "command.mtgmc.gather.fail": "Card not Found",
+  "commands.mtgmc.gather.success": "Gave card \"%s\" to %s"
 }

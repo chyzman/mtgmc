@@ -2,22 +2,19 @@ package com.chyzman.mtgmc.card.cache;
 
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.card.MtgCard;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.google.gson.Gson;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CardCache {
     public static final Gson GSON = new Gson();
 
-    protected final Map<CardIdentifier, MtgCard> CACHED = new HashMap<>();
+    protected final Map<CardIdentifier, MtgCard> CACHED = new ConcurrentHashMap<>();
 
-    protected final Multimap<CardIdentifier, Consumer<@Nullable MtgCard>> QUEUE = ArrayListMultimap.create();
+    protected final Map<CardIdentifier, CompletableFuture<@Nullable MtgCard>> QUEUE = new ConcurrentHashMap<>();
 
     public abstract CompletableFuture<@Nullable MtgCard> getCard(CardIdentifier identifier);
 
@@ -26,7 +23,6 @@ public abstract class CardCache {
         for (Class<?> subclass : CardIdentifier.class.getPermittedSubclasses()) {
             if (!subclass.isInstance(identifier)) CACHED.put(identifier, card);
         }
-        QUEUE.get(identifier).forEach(consumer -> consumer.accept(card));
-        QUEUE.removeAll(identifier);
+        QUEUE.remove(identifier).complete(card);
     }
 }

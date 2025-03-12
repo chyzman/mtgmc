@@ -42,4 +42,7 @@ public interface MtgCard extends CardBase, CardGameplay, CardPrint {
         }
     }
 
+    default String getDisplayName() {
+        return this.flavorName() != null ? this.flavorName() : this.name();
+    }
 }

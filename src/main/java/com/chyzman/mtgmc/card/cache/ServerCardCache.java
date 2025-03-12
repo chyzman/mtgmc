@@ -6,13 +6,11 @@ import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.google.gson.JsonElement;
 import io.wispforest.endec.format.gson.GsonDeserializer;
 import io.wispforest.endec.format.gson.GsonSerializer;
-import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.MtgMc.SCRYFALL;
@@ -24,19 +22,21 @@ public class ServerCardCache extends CardCache {
         var future = new CompletableFuture<MtgCard>();
         if (CACHED.containsKey(identifier)) {
             future.complete(CACHED.get(identifier));
+        } else if (QUEUE.containsKey(identifier)) {
+            future = QUEUE.get(identifier);
         } else {
-            QUEUE.put(identifier, future::complete);
+            QUEUE.put(identifier, future);
         }
         return future;
     }
 
     public void updateQueue() {
         if (QUEUE.isEmpty()) return;
-        var targets = QUEUE.entries().stream().limit(75).toList();
+        var targets = QUEUE.keySet().stream().limit(75).toList();
         var url = HttpRequest.newBuilder()
                 .uri(URI.create(SCRYFALL + "/cards/collection"))
                 .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(CardCollection.Request.ENDEC.encodeFully(GsonSerializer::of, new CardCollection.Request(targets.stream().map(Map.Entry::getKey).toList())).toString()))
+                .POST(HttpRequest.BodyPublishers.ofString(CardCollection.Request.ENDEC.encodeFully(GsonSerializer::of, new CardCollection.Request(targets)).toString()))
                 .build();
         var client = HttpClient.newBuilder()
                 .build()
@@ -47,7 +47,7 @@ public class ServerCardCache extends CardCache {
                 var index = 0;
                 for (var target : targets) {
                     var card = cards.data().size() > index ? cards.data().get(index) : null;
-                    addToCache(target.getKey(), card);
+                    addToCache(target, card);
                     if (card != null) index++;
                 }
             } catch (Exception e) {
