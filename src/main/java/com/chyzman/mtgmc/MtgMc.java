@@ -1,6 +1,6 @@
 package com.chyzman.mtgmc;
 
-import com.chyzman.mtgmc.card.cache.ServerCardCache;
+import com.chyzman.mtgmc.cache.impl.ServerMtgCache;
 import com.chyzman.mtgmc.command.gatherCommand;
 import com.chyzman.mtgmc.network.MtgMcPackets;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
@@ -12,9 +12,7 @@ import net.minecraft.util.Identifier;
 public class MtgMc implements ModInitializer {
     public static final String MOD_ID = "mtgmc";
 
-    public static final String SCRYFALL = "https://api.scryfall.com";
-
-    public static final ServerCardCache SERVER_CARD_CACHE = new ServerCardCache();
+    public static final ServerMtgCache SERVER_CACHE = new ServerMtgCache();
 
     public static Identifier id(String path) {
         return Identifier.of(MOD_ID, path);

@@ -1,5 +1,6 @@
 package com.chyzman.mtgmc.api.card;
 
+import com.chyzman.mtgmc.api.symbology.MtgColor;
 import com.chyzman.mtgmc.util.ExtraEndecs;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.StructEndec;

@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 
 import java.util.Date;
 
-import static com.chyzman.mtgmc.MtgMc.SERVER_CARD_CACHE;
+import static com.chyzman.mtgmc.MtgMc.SERVER_CACHE;
 
 public class ServerEventListeners {
     public static Date lastFetch = new Date();
@@ -14,7 +14,7 @@ public class ServerEventListeners {
             var now = new Date();
             if (now.getTime() - lastFetch.getTime() > 1000) {
                 lastFetch = now;
-                SERVER_CARD_CACHE.updateQueue();
+                SERVER_CACHE.updateQueue();
             }
         });
     }

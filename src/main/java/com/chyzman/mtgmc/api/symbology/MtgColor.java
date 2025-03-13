@@ -1,4 +1,4 @@
-package com.chyzman.mtgmc.api.card;
+package com.chyzman.mtgmc.api.symbology;
 
 import com.chyzman.mtgmc.util.StringIdentifiableEndecUtils;
 import io.wispforest.endec.Endec;

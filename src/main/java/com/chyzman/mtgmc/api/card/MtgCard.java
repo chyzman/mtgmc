@@ -14,7 +14,7 @@ public interface MtgCard extends CardBase, CardGameplay, CardPrint {
     @Override
     CardPrintImpl cardPrintData();
 
-    Endec<MtgCard> ENDEC = StructEndecBuilder.of(
+    public static final Endec<MtgCard> ENDEC = StructEndecBuilder.of(
             CardBaseImpl.ENDEC.flatFieldOf(MtgCard::cardBaseData),
             CardGameplayImpl.ENDEC.flatFieldOf(MtgCard::cardGameplayData),
             CardPrintImpl.ENDEC.flatFieldOf(MtgCard::cardPrintData),

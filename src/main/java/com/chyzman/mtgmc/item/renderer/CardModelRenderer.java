@@ -2,43 +2,36 @@ package com.chyzman.mtgmc.item.renderer;
 
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.MtgCard;
-import com.chyzman.mtgmc.card.cache.CardCache;
+import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.wispforest.owo.Owo;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.LoadedEntityModels;
-import net.minecraft.client.render.entity.model.ShieldEntityModel;
-import net.minecraft.client.render.item.ItemRenderState;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.item.model.special.ShieldModelRenderer;
 import net.minecraft.client.render.item.model.special.SpecialModelRenderer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-import static com.chyzman.mtgmc.client.MtgMcClient.CLIENT_CARD_CACHE;
+import static com.chyzman.mtgmc.client.MtgMcClient.CLIENT_CACHE;
 
 @Environment(EnvType.CLIENT)
 public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard> {
+    public static final Identifier UNKNOWN_CARD = MtgMc.id("item/unknown_card");
 
     @Override
     public @Nullable MtgCard getData(ItemStack stack) {
         var server = Owo.currentServer();
         if (server == null) return null;
 
-        CardCache cache = server.getOverworld().isClient() ? CLIENT_CARD_CACHE : MtgMc.SERVER_CARD_CACHE;
+        MtgCache cache = server.getOverworld().isClient() ? CLIENT_CACHE : MtgMc.SERVER_CACHE;
 
         if (!stack.contains(MtgMcComponents.CARD)) return null;
 
@@ -57,10 +50,10 @@ public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard
     ) {
         var client = MinecraftClient.getInstance();
 
-        var image = MtgMc.id("item/unknown_card");
+        var image = UNKNOWN_CARD;
 
         if (card != null) {
-            var future = CLIENT_CARD_CACHE.getImage(card);
+            var future = CLIENT_CACHE.getImage(card);
             if (future != null) image = future.getNow(image);
         }
 
@@ -68,13 +61,28 @@ public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard
 
         var entry = matrices.peek();
         var matrixStack = entry.getPositionMatrix();
-        var renderLayer = RenderLayer.getItemEntityTranslucentCull(image);
+        var renderLayer = RenderLayer.getItemEntityTranslucentCull(image == UNKNOWN_CARD ? SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE : image);
         var bufferBuilder = vertexConsumers.getBuffer(renderLayer);
 
-        bufferBuilder.vertex(matrixStack, 13/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(1, 1).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 13/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(1, 0).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 3/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(0, 0).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 3/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(0, 1).overlay(overlay).light(light).normal(entry, 0, 0,1);
+        var minU = 0f;
+        var minV = 0f;
+        var maxU = 1f;
+        var maxV = 1f;
+
+        if (image == UNKNOWN_CARD) {
+            var sprite = client.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(image);
+            var width = (sprite.getMaxU() - sprite.getMinU())/16f;
+            var height = (sprite.getMaxV() - sprite.getMinV())/16f;
+            minU = sprite.getMinU() + 3 * width;
+            minV = sprite.getMinV() + height;
+            maxU = sprite.getMaxU() - 3 * width;
+            maxV = sprite.getMaxV() - height;
+        }
+
+        bufferBuilder.vertex(matrixStack, 13/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(maxU, maxV).overlay(overlay).light(light).normal(entry, 0, 0,1);
+        bufferBuilder.vertex(matrixStack, 13/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(maxU, minV).overlay(overlay).light(light).normal(entry, 0, 0,1);
+        bufferBuilder.vertex(matrixStack, 3/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(minU, minV).overlay(overlay).light(light).normal(entry, 0, 0,1);
+        bufferBuilder.vertex(matrixStack, 3/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(minU, maxV).overlay(overlay).light(light).normal(entry, 0, 0,1);
 
         client.getBufferBuilders().getEntityVertexConsumers().draw(renderLayer);
 

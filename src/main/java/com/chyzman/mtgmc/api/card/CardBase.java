@@ -37,7 +37,7 @@ public interface CardBase {
     default List<Integer> multiverseIds() {return cardBaseData().multiverseIds();}
 
     @Nullable
-    default String oracleId() {return cardBaseData().oracleId();}
+    default UUID oracleId() {return cardBaseData().oracleId();}
 
     @NotNull
     default String printsSearchUri() {return cardBaseData().printsSearchUri();}
@@ -46,7 +46,7 @@ public interface CardBase {
     default String rulingsUri() {return cardBaseData().rulingsUri();}
 
     @NotNull
-    default String scrufallUri() {return cardBaseData().scrufallUri();}
+    default String scryfallUri() {return cardBaseData().scryfallUri();}
 
     @Nullable
     default Integer tcgplayerEtchedId() {return cardBaseData().tcgplayerEtchedId();}
@@ -66,10 +66,10 @@ public interface CardBase {
             Endec.INT.optionalFieldOf("mtgo_foil_id", CardBase::mtgoFoilId, (Integer) null),
             Endec.INT.optionalFieldOf("mtgo_id", CardBase::mtgoId, (Integer) null),
             Endec.INT.listOf().optionalFieldOf("multiverse_ids", CardBase::multiverseIds, (List<Integer>) null),
-            Endec.STRING.optionalFieldOf("oracle_id", CardBase::oracleId, (String) null),
+            BuiltInEndecs.UUID.optionalFieldOf("oracle_id", CardBase::oracleId, (UUID) null),
             Endec.STRING.fieldOf("prints_search_uri", CardBase::printsSearchUri),
             Endec.STRING.fieldOf("rulings_uri", CardBase::rulingsUri),
-            Endec.STRING.fieldOf("scryfall_uri", CardBase::scrufallUri),
+            Endec.STRING.fieldOf("scryfall_uri", CardBase::scryfallUri),
             Endec.INT.optionalFieldOf("tcgplayer_etched_id", CardBase::tcgplayerEtchedId, (Integer) null),
             Endec.INT.optionalFieldOf("tcgplayer_id", CardBase::tcgplayerId, (Integer) null),
             Endec.STRING.fieldOf("uri", CardBase::uri),
@@ -87,10 +87,10 @@ public interface CardBase {
             @Nullable Integer mtgoFoilId,
             @Nullable Integer mtgoId,
             @NotNull List<Integer> multiverseIds,
-            @Nullable String oracleId,
+            @Nullable UUID oracleId,
             @NotNull String printsSearchUri,
             @NotNull String rulingsUri,
-            @NotNull String scrufallUri,
+            @NotNull String scryfallUri,
             @Nullable Integer tcgplayerEtchedId,
             @Nullable Integer tcgplayerId,
             @NotNull String uri
