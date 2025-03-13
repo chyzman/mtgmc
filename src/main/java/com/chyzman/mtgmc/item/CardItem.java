@@ -41,16 +41,14 @@ public class CardItem extends Item {
 
         MtgCache cache = server.getOverworld().isClient() ? MtgMcClient.CLIENT_CACHE : MtgMc.SERVER_CACHE;
 
-        if (!stack.contains(MtgMcComponents.CARD)) {
-            tooltip.add(UNKNOWN_CARD);
-            return;
-        }
+        if (!stack.contains(MtgMcComponents.CARD)) return;
+
 
         var card = cache.getCard(stack.get(MtgMcComponents.CARD)).getNow(null);
-        if (card != null) {
-            tooltip.add(Text.literal(card.typeLine()));
-//            if (card.oracleText() != null) tooltip.add(Text.literal(card.oracleText()));
-//            if (card.flavorText() != null) tooltip.add(Text.literal(card.flavorText()));
-        }
+        if (card == null) return;
+        tooltip.add(Text.literal(card.typeLine()));
+//        if (card.oracleText() != null) tooltip.add(Text.literal(card.oracleText()));
+//        if (card.flavorText() != null) tooltip.add(Text.literal(card.flavorText()));
+
     }
 }

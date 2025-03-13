@@ -18,16 +18,21 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.client.MtgMcClient.CLIENT_CACHE;
 
 @Environment(EnvType.CLIENT)
-public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard> {
+public class CardModelRenderer implements SpecialModelRenderer<CompletableFuture<@Nullable MtgCard>> {
+    public static final Identifier LOADING_CARD = MtgMc.id("item/loading_card");
     public static final Identifier UNKNOWN_CARD = MtgMc.id("item/unknown_card");
 
+
     @Override
-    public @Nullable MtgCard getData(ItemStack stack) {
+    public CompletableFuture<@Nullable MtgCard> getData(ItemStack stack) {
         var server = Owo.currentServer();
         if (server == null) return null;
 
@@ -35,12 +40,12 @@ public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard
 
         if (!stack.contains(MtgMcComponents.CARD)) return null;
 
-        return cache.getCard(stack.get(MtgMcComponents.CARD)).getNow(null);
+        return cache.getCard(stack.get(MtgMcComponents.CARD));
     }
 
     @Override
     public void render(
-            @Nullable MtgCard card,
+            CompletableFuture<@Nullable MtgCard> futureCard,
             ModelTransformationMode modelTransformationMode,
             MatrixStack matrices,
             VertexConsumerProvider vertexConsumers,
@@ -50,18 +55,23 @@ public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard
     ) {
         var client = MinecraftClient.getInstance();
 
-        var image = UNKNOWN_CARD;
+        Identifier image = LOADING_CARD;
 
-        if (card != null) {
-            var future = CLIENT_CACHE.getImage(card);
-            if (future != null) image = future.getNow(image);
+        if (futureCard != null && futureCard.isDone()) {
+            if (futureCard.isCompletedExceptionally() || futureCard.isCancelled() || futureCard.getNow(null) == null) image = UNKNOWN_CARD;
+            var card = futureCard.getNow(null);
+            if (card != null) image = CLIENT_CACHE.getImage(card).getNow(LOADING_CARD);
+        } else if (futureCard == null) {
+            image = UNKNOWN_CARD;
         }
 
         matrices.push();
 
+        var isUnknown = image == UNKNOWN_CARD || image == LOADING_CARD;
+
         var entry = matrices.peek();
         var matrixStack = entry.getPositionMatrix();
-        var renderLayer = RenderLayer.getItemEntityTranslucentCull(image == UNKNOWN_CARD ? SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE : image);
+        var renderLayer = RenderLayer.getItemEntityTranslucentCull(isUnknown ? SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE : image);
         var bufferBuilder = vertexConsumers.getBuffer(renderLayer);
 
         var minU = 0f;
@@ -69,20 +79,20 @@ public class CardModelRenderer implements SpecialModelRenderer<@Nullable MtgCard
         var maxU = 1f;
         var maxV = 1f;
 
-        if (image == UNKNOWN_CARD) {
+        if (isUnknown) {
             var sprite = client.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(image);
-            var width = (sprite.getMaxU() - sprite.getMinU())/16f;
-            var height = (sprite.getMaxV() - sprite.getMinV())/16f;
+            var width = (sprite.getMaxU() - sprite.getMinU()) / 16f;
+            var height = (sprite.getMaxV() - sprite.getMinV()) / 16f;
             minU = sprite.getMinU() + 3 * width;
             minV = sprite.getMinV() + height;
             maxU = sprite.getMaxU() - 3 * width;
             maxV = sprite.getMaxV() - height;
         }
 
-        bufferBuilder.vertex(matrixStack, 13/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(maxU, maxV).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 13/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(maxU, minV).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 3/16F, 15/16F, 17/32F).color(255, 255, 255, 255).texture(minU, minV).overlay(overlay).light(light).normal(entry, 0, 0,1);
-        bufferBuilder.vertex(matrixStack, 3/16F, 1/16F, 17/32F).color(255, 255, 255, 255).texture(minU, maxV).overlay(overlay).light(light).normal(entry, 0, 0,1);
+        bufferBuilder.vertex(matrixStack, 13 / 16F, 1 / 16F, 17 / 32F).color(255, 255, 255, 255).texture(maxU, maxV).overlay(overlay).light(light).normal(entry, 0, 0, 1);
+        bufferBuilder.vertex(matrixStack, 13 / 16F, 15 / 16F, 17 / 32F).color(255, 255, 255, 255).texture(maxU, minV).overlay(overlay).light(light).normal(entry, 0, 0, 1);
+        bufferBuilder.vertex(matrixStack, 3 / 16F, 15 / 16F, 17 / 32F).color(255, 255, 255, 255).texture(minU, minV).overlay(overlay).light(light).normal(entry, 0, 0, 1);
+        bufferBuilder.vertex(matrixStack, 3 / 16F, 1 / 16F, 17 / 32F).color(255, 255, 255, 255).texture(minU, maxV).overlay(overlay).light(light).normal(entry, 0, 0, 1);
 
         client.getBufferBuilders().getEntityVertexConsumers().draw(renderLayer);
 
