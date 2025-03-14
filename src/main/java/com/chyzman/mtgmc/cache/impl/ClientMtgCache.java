@@ -2,6 +2,7 @@ package com.chyzman.mtgmc.cache.impl;
 
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.CardIdentifier;
+import com.chyzman.mtgmc.api.card.CardImageStatus;
 import com.chyzman.mtgmc.api.card.MtgCard;
 import com.chyzman.mtgmc.api.ruling.Ruling;
 import com.chyzman.mtgmc.cache.api.MtgCache;
@@ -83,6 +84,7 @@ public class ClientMtgCache extends MtgCache {
             new CacheLoader<>() {
                 @Override
                 public @NotNull CompletableFuture<Identifier> load(@NotNull MtgCard card) {
+                    if (card.imageUris() == null || card.imageStatus().equals(CardImageStatus.MISSING)) return CompletableFuture.completedFuture(null);
                     return ImageUtils.getTexture(
                             MtgMc.id(card.id().toString()),
                             Path.of(MinecraftClient.getInstance().runDirectory + "/mtgCards/" + card.id() + ".png"),

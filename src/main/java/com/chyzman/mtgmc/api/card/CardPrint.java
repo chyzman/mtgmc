@@ -25,8 +25,8 @@ public interface CardPrint {
     @NotNull
     default String borderColor() {return cardPrintData().borderColor();}
 
-    @NotNull
-    default String cardBackId() {return cardPrintData().cardBackId();}
+    @Nullable
+    default UUID cardBackId() {return cardPrintData().cardBackId();}
 
     @NotNull
     default String collectorNumber() {return cardPrintData().collectorNumber();}
@@ -63,7 +63,7 @@ public interface CardPrint {
     @NotNull
     default CardImageStatus imageStatus() {return cardPrintData().imageStatus();}
 
-    @NotNull
+    @Nullable
     default CardImageUris imageUris() {return cardPrintData().imageUris();}
 
     default boolean oversized() {return cardPrintData().oversized();}
@@ -86,7 +86,7 @@ public interface CardPrint {
     default boolean promo() {return cardPrintData().promo();}
 
     @NotNull
-    default List<CardPromoType> promoTypes() {return cardPrintData().promoTypes();}
+    default List<String> promoTypes() {return cardPrintData().promoTypes();}
 
     @NotNull
     default Map<String, String> purchaseUris() {return cardPrintData().purchaseUris();}
@@ -137,11 +137,11 @@ public interface CardPrint {
 
     StructEndec<CardPrintImpl> ENDEC = ExtraEndecs.of(
             Endec.STRING.optionalFieldOf("artist", CardPrint::artist, (String) null),
-            Endec.STRING.listOf().optionalFieldOf("artist_ids", CardPrint::artistIds, (List<String>) null),
-            Endec.INT.listOf().optionalFieldOf("attribution_line", CardPrint::attributionLights, (List<Integer>) null),
+            Endec.STRING.listOf().optionalFieldOf("artist_ids", CardPrint::artistIds, ArrayList::new),
+            Endec.INT.listOf().optionalFieldOf("attribution_line", CardPrint::attributionLights, ArrayList::new),
             Endec.BOOLEAN.fieldOf("booster", CardPrint::booster),
             Endec.STRING.fieldOf("border_color", CardPrint::borderColor),
-            Endec.STRING.fieldOf("card_back_id", CardPrint::cardBackId),
+            BuiltInEndecs.UUID.optionalFieldOf("card_back_id", CardPrint::cardBackId, (UUID) null),
             Endec.STRING.fieldOf("collector_number", CardPrint::collectorNumber),
             Endec.BOOLEAN.optionalFieldOf("content_warning", CardPrint::contentWarning, false),
             Endec.BOOLEAN.fieldOf("digital", CardPrint::digital),
@@ -163,8 +163,8 @@ public interface CardPrint {
             Endec.STRING.optionalFieldOf("printed_text", CardPrint::printedText, (String) null),
             Endec.STRING.optionalFieldOf("printed_type_line", CardPrint::printedTypeLine, (String) null),
             Endec.BOOLEAN.fieldOf("promo", CardPrint::promo),
-            CardPromoType.ENDEC.listOf().optionalFieldOf("promo_types", CardPrint::promoTypes, (List<CardPromoType>) null),
-            Endec.STRING.mapOf().optionalFieldOf("purchase_uris", CardPrint::purchaseUris, (Map<String, String>) null),
+            Endec.STRING.listOf().optionalFieldOf("promo_types", CardPrint::promoTypes, ArrayList::new),
+            Endec.STRING.mapOf().optionalFieldOf("purchase_uris", CardPrint::purchaseUris, HashMap::new),
             CardRarity.ENDEC.fieldOf("rarity", CardPrint::rarity),
             Endec.STRING.mapOf().fieldOf("related_uris", CardPrint::relatedUris),
             Endec.STRING.fieldOf("released_at", CardPrint::releasedAt),
@@ -193,7 +193,7 @@ public interface CardPrint {
             @NotNull List<Integer> attributionLights,
             boolean booster,
             @NotNull String borderColor,
-            @NotNull String cardBackId,
+            @Nullable UUID cardBackId,
             @NotNull String collectorNumber,
             boolean contentWarning,
             boolean digital,
@@ -207,7 +207,7 @@ public interface CardPrint {
             boolean highresImage,
             @Nullable UUID illustrationId,
             @NotNull CardImageStatus imageStatus,
-            @NotNull CardImageUris imageUris,
+            @Nullable CardImageUris imageUris,
             boolean oversized,
             @NotNull CardPreview preview,
             @NotNull CardPrices prices,
@@ -215,7 +215,7 @@ public interface CardPrint {
             @Nullable String printedText,
             @Nullable String printedTypeLine,
             boolean promo,
-            @NotNull List<CardPromoType> promoTypes,
+            @NotNull List<String> promoTypes,
             @NotNull Map<String, String> purchaseUris,
             @NotNull CardRarity rarity,
             @NotNull Map<String, String> relatedUris,

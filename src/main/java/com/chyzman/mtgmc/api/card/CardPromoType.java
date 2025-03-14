@@ -4,6 +4,7 @@ import com.chyzman.mtgmc.util.StringIdentifiableEndecUtils;
 import io.wispforest.endec.Endec;
 import net.minecraft.util.StringIdentifiable;
 
+//TODO: remove this or update it cuz its outdated
 public enum CardPromoType implements StringIdentifiable {
     ARENA_LEAGUE("arenaleague"),
     BUY_A_BOX("buyabox"),

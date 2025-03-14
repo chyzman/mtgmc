@@ -1,9 +1,10 @@
 {
   "item.mtgmc.card": "Card",
+  "item.mtgmc.deck": "Deck",
+
   "item.mtgmc.card.unknown": "Unknown Card",
 
-  "ui.copy": "Copy to clipboard",
-  "ui.copy.success": "Copied to clipboard",
+  "item.mtgmc.deck_size": "%s card(s)",
 
   "command.mtgmc.gather.fail": "Card not Found",
   "commands.mtgmc.gather.success": "Gave card \"%s\" to %s"

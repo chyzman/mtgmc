@@ -58,12 +58,16 @@ public class CardModelRenderer implements SpecialModelRenderer<CompletableFuture
         Identifier image = LOADING_CARD;
 
         if (futureCard != null && futureCard.isDone()) {
-            if (futureCard.isCompletedExceptionally() || futureCard.isCancelled() || futureCard.getNow(null) == null) image = UNKNOWN_CARD;
-            var card = futureCard.getNow(null);
-            if (card != null) image = CLIENT_CACHE.getImage(card).getNow(LOADING_CARD);
+            if (futureCard.isCompletedExceptionally() || futureCard.isCancelled() || futureCard.getNow(null) == null) {
+                image = UNKNOWN_CARD;
+            } else {
+                var card = futureCard.getNow(null);
+                if (card != null) image = CLIENT_CACHE.getImage(card).getNow(LOADING_CARD);
+            }
         } else if (futureCard == null) {
             image = UNKNOWN_CARD;
         }
+        if (image == null) image = UNKNOWN_CARD;
 
         matrices.push();
 

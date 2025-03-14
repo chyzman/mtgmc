@@ -1,32 +1,25 @@
 package com.chyzman.mtgmc.cache.api;
 
+import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.card.MtgCard;
 import com.chyzman.mtgmc.api.ruling.Ruling;
-import com.chyzman.mtgmc.network.http.response.CardAutoCompletionsResponse;
-import com.google.common.cache.Cache;
 import com.google.common.cache.LoadingCache;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import io.wispforest.endec.format.gson.GsonDeserializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static com.chyzman.mtgmc.MtgMc.GSON;
+
 public abstract class MtgCache {
-    public static final String SCRYFALL = "https://api.scryfall.com";
-
-    public static final Gson GSON = new Gson();
-
-    protected static final HttpClient CLIENT = HttpClient.newHttpClient();
-
 
     public abstract LoadingCache<CardIdentifier, CompletableFuture<MtgCard>> cardCache();
 
@@ -50,12 +43,13 @@ public abstract class MtgCache {
     }
 
     public CompletableFuture<MtgCard> getRandomCard(@Nullable String query) {
-        return CLIENT.sendAsync(
-                HttpRequest.newBuilder()
-                        .uri(URI.create(SCRYFALL + "/cards/random" + (query == null || query.isBlank() ? "" : "?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8))))
-                        .build(),
-                HttpResponse.BodyHandlers.ofString()
-        ).thenApply(response -> MtgCard.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)));
+        return MtgMc.CLIENT.sendAsync(
+                        HttpRequest.newBuilder()
+                                .uri(URI.create(MtgMc.SCRYFALL + "/cards/random" + (query == null || query.isBlank() ? "" : "?q=" + URLEncoder.encode(query, StandardCharsets.UTF_8))))
+                                .build(),
+                        HttpResponse.BodyHandlers.ofString()
+                )
+                .thenApply(response -> MtgCard.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)));
     }
 
     public CompletableFuture<MtgCard> getRandomCard() {

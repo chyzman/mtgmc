@@ -69,11 +69,8 @@ public class DumpScreen extends BaseOwoScreen<FlowLayout> {
                                                 Sizing.fill(),
                                                 Sizing.fixed(24)
                                         ).child(Components.button(
-                                                                Text.translatable("ui.copy"),
-                                                                component -> {
-                                                                    MinecraftClient.getInstance().keyboard.setClipboard(dump.getString());
-                                                                    MinecraftClient.getInstance().player.sendMessage(Text.translatable("ui.copy.success"), true);
-                                                                }
+                                                                Text.translatable("chat.copy"),
+                                                                component -> MinecraftClient.getInstance().keyboard.setClipboard(dump.getString())
                                                         )
                                                         .horizontalSizing(Sizing.fill(50))
                                         )

@@ -1,5 +1,6 @@
 package com.chyzman.mtgmc.cache.impl;
 
+import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.MtgCard;
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.ruling.Ruling;
@@ -14,19 +15,19 @@ import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonElement;
 import io.wispforest.endec.format.gson.GsonDeserializer;
 import io.wispforest.endec.format.gson.GsonSerializer;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
 import java.net.URLEncoder;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.chyzman.mtgmc.MtgMc.GSON;
 
 public class ServerMtgCache extends MtgCache {
 
@@ -35,7 +36,7 @@ public class ServerMtgCache extends MtgCache {
         return cardCache;
     }
 
-    private final Map<CardIdentifier, CompletableFuture<MtgCard>> cardQueue = new HashMap<>();
+    private final Map<CardIdentifier, CompletableFuture<MtgCard>> cardQueue = new ConcurrentHashMap<>();
 
     private final LoadingCache<CardIdentifier, CompletableFuture<MtgCard>> cardCache = CacheBuilder.newBuilder().build(
             new CacheLoader<>() {
@@ -56,11 +57,11 @@ public class ServerMtgCache extends MtgCache {
         if (cardQueue.isEmpty()) return;
         var targets = cardQueue.keySet().stream().limit(75).toList();
         var url = HttpRequest.newBuilder()
-                .uri(URI.create(SCRYFALL + "/cards/collection"))
+                .uri(URI.create(MtgMc.SCRYFALL + "/cards/collection"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(CardCollectionRequest.ENDEC.encodeFully(GsonSerializer::of, new CardCollectionRequest(targets)).toString()))
                 .build();
-        CLIENT.sendAsync(url, HttpResponse.BodyHandlers.ofString())
+        MtgMc.CLIENT.sendAsync(url, HttpResponse.BodyHandlers.ofString())
                 .thenAccept(response -> {
                     var cards = CardCollectionResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class));
                     var index = 0;
@@ -84,9 +85,9 @@ public class ServerMtgCache extends MtgCache {
             new CacheLoader<>() {
                 @Override
                 public @NotNull CompletableFuture<List<Ruling>> load(@NotNull CardIdentifier.OracleId key) {
-                    return CLIENT.sendAsync(
+                    return MtgMc.CLIENT.sendAsync(
                             HttpRequest.newBuilder()
-                                    .uri(URI.create(SCRYFALL + "/cards/" + key + "/rulings"))
+                                    .uri(URI.create(MtgMc.SCRYFALL + "/cards/" + key + "/rulings"))
                                     .build(),
                             HttpResponse.BodyHandlers.ofString()
                     ).thenApply(response -> CardRulingsResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)).data());
@@ -103,9 +104,9 @@ public class ServerMtgCache extends MtgCache {
             new CacheLoader<>() {
                 @Override
                 public @NotNull CompletableFuture<List<String>> load(@NotNull String key) {
-                    return CLIENT.sendAsync(
+                    return MtgMc.CLIENT.sendAsync(
                             HttpRequest.newBuilder()
-                                    .uri(URI.create(SCRYFALL + "/cards/autocomplete?q=" + URLEncoder.encode(key, StandardCharsets.UTF_8) + "&include_extras=true"))
+                                    .uri(URI.create(MtgMc.SCRYFALL + "/cards/autocomplete?q=" + URLEncoder.encode(key, StandardCharsets.UTF_8) + "&include_extras=true"))
                                     .build(),
                             HttpResponse.BodyHandlers.ofString()
                     ).thenApply(response -> CardAutoCompletionsResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)).data());

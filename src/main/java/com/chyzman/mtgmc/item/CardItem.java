@@ -3,8 +3,11 @@ package com.chyzman.mtgmc.item;
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.client.MtgMcClient;
+import com.chyzman.mtgmc.registry.MtgMcBlocks;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
 import io.wispforest.owo.Owo;
+import net.minecraft.block.Block;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
@@ -12,11 +15,11 @@ import net.minecraft.text.Text;
 
 import java.util.List;
 
-public class CardItem extends Item {
+public class CardItem extends BlockItem {
     public static final Text UNKNOWN_CARD = Text.translatable("item.mtgmc.card.unknown");
 
     public CardItem(Settings settings) {
-        super(settings);
+        super(MtgMcBlocks.CARD, settings);
     }
 
     @Override

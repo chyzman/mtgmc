@@ -11,15 +11,13 @@ import net.minecraft.command.argument.UuidArgumentType;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Colors;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import static com.chyzman.mtgmc.MtgMc.SERVER_CACHE;
 import static com.chyzman.mtgmc.registry.MtgMcItems.CARD;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
-public class gatherCommand {
+public class GatherCommand {
 
     public static void register() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
