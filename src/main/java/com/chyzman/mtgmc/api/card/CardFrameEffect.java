@@ -4,6 +4,7 @@ import com.chyzman.mtgmc.util.StringIdentifiableEndecUtils;
 import io.wispforest.endec.Endec;
 import net.minecraft.util.StringIdentifiable;
 
+//TODO fix or remove this cuz its outdated
 public enum CardFrameEffect implements StringIdentifiable {
     COLOR_SHIFTED("colorshifted"),
     COMPANION("companion"),

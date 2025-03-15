@@ -13,9 +13,9 @@ public class MtgMcSuggestionProviders {
             MtgMc.id("card_names"),
             (context, builder) -> SERVER_CACHE.getCardAutoCompletions(context.getNodes().getLast().getRange().get(context.getInput()))
                     .thenCompose(cardNames -> CommandSource.suggestMatching(
-                                       cardNames.stream(),
-                                       builder
-                               )
-                    )
+                                         cardNames.stream(),
+                                         builder
+                                 )
+                    ).toCompletableFuture()
     );
 }

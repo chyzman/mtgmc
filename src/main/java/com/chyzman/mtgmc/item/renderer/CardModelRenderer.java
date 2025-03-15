@@ -4,6 +4,7 @@ import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.MtgCard;
 import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
+import com.chyzman.mtgmc.util.Procrastinator;
 import com.mojang.serialization.MapCodec;
 import io.wispforest.owo.Owo;
 import net.fabricmc.api.EnvType;
@@ -26,13 +27,13 @@ import java.util.concurrent.CompletableFuture;
 import static com.chyzman.mtgmc.client.MtgMcClient.CLIENT_CACHE;
 
 @Environment(EnvType.CLIENT)
-public class CardModelRenderer implements SpecialModelRenderer<CompletableFuture<@Nullable MtgCard>> {
+public class CardModelRenderer implements SpecialModelRenderer<Procrastinator<@Nullable MtgCard>> {
     public static final Identifier LOADING_CARD = MtgMc.id("item/loading_card");
     public static final Identifier UNKNOWN_CARD = MtgMc.id("item/unknown_card");
 
 
     @Override
-    public CompletableFuture<@Nullable MtgCard> getData(ItemStack stack) {
+    public Procrastinator<@Nullable MtgCard> getData(ItemStack stack) {
         var server = Owo.currentServer();
         if (server == null) return null;
 
@@ -45,7 +46,7 @@ public class CardModelRenderer implements SpecialModelRenderer<CompletableFuture
 
     @Override
     public void render(
-            CompletableFuture<@Nullable MtgCard> futureCard,
+            Procrastinator<@Nullable MtgCard> proCard,
             ModelTransformationMode modelTransformationMode,
             MatrixStack matrices,
             VertexConsumerProvider vertexConsumers,
@@ -56,6 +57,8 @@ public class CardModelRenderer implements SpecialModelRenderer<CompletableFuture
         var client = MinecraftClient.getInstance();
 
         Identifier image = LOADING_CARD;
+
+        var futureCard = proCard.toCompletableFuture();
 
         if (futureCard != null && futureCard.isDone()) {
             if (futureCard.isCompletedExceptionally() || futureCard.isCancelled() || futureCard.getNow(null) == null) {

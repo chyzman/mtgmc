@@ -27,11 +27,15 @@ public class DeckItem extends Item {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (!stack.contains(MtgMcComponents.DECK) && stack.get(MtgMcComponents.DECK) == null) return ActionResult.PASS;
+        if (!stack.contains(MtgMcComponents.DECK) || stack.get(MtgMcComponents.DECK) == null || stack.get(MtgMcComponents.DECK).isEmpty()) {
+            user.getInventory().removeOne(stack);
+            return ActionResult.PASS;
+        }
         var deck = stack.get(MtgMcComponents.DECK);
         var cardStack = MtgMcItems.CARD.getDefaultStack();
         cardStack.set(MtgMcComponents.CARD, deck.removeFirst());
         user.getInventory().offerOrDrop(cardStack);
+        if (deck.isEmpty()) user.getInventory().removeOne(stack);
         return ActionResult.SUCCESS;
     }
 }

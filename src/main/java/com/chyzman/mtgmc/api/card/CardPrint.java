@@ -48,7 +48,7 @@ public interface CardPrint {
     default CardFrame frame() {return cardPrintData().frame();}
 
     @NotNull
-    default List<CardFrameEffect> frameEffects() {return cardPrintData().frameEffects();}
+    default List<String> frameEffects() {return cardPrintData().frameEffects();}
 
     default boolean fullArt() {return cardPrintData().fullArt();}
 
@@ -149,7 +149,7 @@ public interface CardPrint {
             Endec.STRING.optionalFieldOf("flavor_name", CardPrint::flavorName, (String) null),
             Endec.STRING.optionalFieldOf("flavor_text", CardPrint::flavorText, (String) null),
             CardFrame.ENDEC.fieldOf("frame", CardPrint::frame),
-            CardFrameEffect.ENDEC.listOf().optionalFieldOf("frame_effects", CardPrint::frameEffects, ArrayList::new),
+            Endec.STRING.listOf().optionalFieldOf("frame_effects", CardPrint::frameEffects, ArrayList::new),
             Endec.BOOLEAN.fieldOf("full_art", CardPrint::fullArt),
             CardGames.ENDEC.listOf().fieldOf("games", CardPrint::games),
             Endec.BOOLEAN.fieldOf("highres_image", CardPrint::highresImage),
@@ -201,7 +201,7 @@ public interface CardPrint {
             @Nullable String flavorName,
             @Nullable String flavorText,
             @NotNull CardFrame frame,
-            @NotNull List<CardFrameEffect> frameEffects,
+            @NotNull List<String> frameEffects,
             boolean fullArt,
             @NotNull List<CardGames> games,
             boolean highresImage,

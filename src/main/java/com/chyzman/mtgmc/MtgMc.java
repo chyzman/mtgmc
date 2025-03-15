@@ -9,9 +9,11 @@ import com.chyzman.mtgmc.registry.MtgMcBlocks;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
 import com.chyzman.mtgmc.registry.MtgMcItems;
 import com.google.gson.Gson;
+import com.mojang.logging.LogUtils;
 import io.wispforest.owo.registration.reflect.FieldRegistrationHandler;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.util.Identifier;
+import org.slf4j.Logger;
 
 import java.net.http.HttpClient;
 

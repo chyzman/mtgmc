@@ -11,13 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class StringIdentifiableEndecUtils {
-    private static final Map<Class<? extends Enum>, Lookup<?>> CACHED_LOOKUPS = new HashMap<>();
+    private static final Map<Class<? extends Enum<?>>, Lookup<?>> CACHED_LOOKUPS = new HashMap<>();
 
     @Nullable
     public static <T extends Enum<T> & StringIdentifiable> T get(Class<T> clazz, String name) {
         return getOrCreateLookup(clazz).namesToEntry().get(name);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Enum<T> & StringIdentifiable> Lookup<T> getOrCreateLookup(Class<T> clazz) {
         return (Lookup<T>) CACHED_LOOKUPS.computeIfAbsent(clazz, aClazz -> {
             Map<String, T> serializedNames = new HashMap<>();

@@ -1,5 +1,6 @@
 package com.chyzman.mtgmc.util;
 
+import com.mojang.logging.LogUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -8,6 +9,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
+import org.slf4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -18,19 +20,15 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
-
-import static com.mojang.text2speech.Narrator.LOGGER;
 
 @Environment(EnvType.CLIENT)
 public class ImageUtils {
+    private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static CompletableFuture<Identifier> getTexture(Identifier textureId, Path path, String uri) {
-        return CompletableFuture.supplyAsync(() -> {
+    public static Procrastinator<Identifier> getTexture(Identifier textureId, Path path, String uri) {
+        return Procrastinator.supplyAsync(() -> {
             NativeImage nativeImage;
             try {
                 nativeImage = downloadImage(path, uri);
@@ -42,9 +40,9 @@ public class ImageUtils {
         }, Util.getDownloadWorkerExecutor().named("downloadMtgCard")).thenCompose(image -> registerTexture(textureId, image));
     }
 
-    private static CompletableFuture<Identifier> registerTexture(Identifier textureId, NativeImage image) {
+    private static Procrastinator<Identifier> registerTexture(Identifier textureId, NativeImage image) {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        return CompletableFuture.supplyAsync(() -> {
+        return Procrastinator.supplyAsync(() -> {
             minecraftClient.getTextureManager().registerTexture(textureId, new NativeImageBackedTexture(image));
             return textureId;
         }, minecraftClient);
@@ -101,7 +99,7 @@ public class ImageUtils {
                 try {
                     PathUtil.createDirectories(path.getParent());
                     Files.write(path, bs);
-                } catch (IOException var13) {
+                } catch (IOException e) {
                     LOGGER.warn("Failed to cache texture {} in {}", uri, path);
                 }
 

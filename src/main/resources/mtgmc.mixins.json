@@ -4,6 +4,7 @@
   "package": "com.chyzman.mtgmc.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ArgumentTypesMixin"
   ],
   "client": [
     "client.HeldItemRendererMixin"

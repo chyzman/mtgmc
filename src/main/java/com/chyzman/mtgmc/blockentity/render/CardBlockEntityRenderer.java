@@ -41,7 +41,7 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
 
         entity.tappedness += Delta.compute(entity.tappedness, entity.tapped ? 1f : 0f, frameDelta * 0.25f);
 
-        var lookedAt = client.crosshairTarget.getType() == BlockHitResult.Type.BLOCK && client.crosshairTarget.getPos().squaredDistanceTo(entity.getPos().toCenterPos()) < 0.5f;
+        var lookedAt = !client.options.hudHidden && client.crosshairTarget.getType() == BlockHitResult.Type.BLOCK && client.crosshairTarget.getPos().squaredDistanceTo(entity.getPos().toCenterPos()) < 0.5f;
         entity.lookedAtness += Delta.compute(entity.lookedAtness, lookedAt ? 1f : 0f, frameDelta * 0.25f);
 
         matrices.push();
@@ -55,11 +55,12 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
 
         RANDOM.setSeed(entity.getPos().hashCode());
 
+        matrices.translate(0, MathHelper.sin((time + RANDOM.nextInt(1,10000)) / 2500f) * 0.01f + (MathHelper.lerp(entity.lookedAtness, 0, 0.4f)), 0);
+
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin((time + RANDOM.nextInt(1,10000)) / 2100f)));
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.cos((time + RANDOM.nextInt(1,10000)) / 2300f)));
-        matrices.translate(0, MathHelper.sin((time + RANDOM.nextInt(1,10000)) / 2500f) * 0.01f + (MathHelper.lerp(entity.lookedAtness, 0, 0.3f)), 0);
 
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(entity.lookedAtness, MathHelper.lerp(entity.tappedness, 85f, 90f), 85f)));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(entity.tappedness, 85f, 90f)));
 
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-MathHelper.lerp(entity.tappedness, 0f, 90f)));
 

@@ -7,5 +7,7 @@
   "item.mtgmc.deck_size": "%s card(s)",
 
   "command.mtgmc.gather.fail": "Card not Found",
-  "commands.mtgmc.gather.success": "Gave card \"%s\" to %s"
+  "commands.mtgmc.gather.success": "Gave card \"%s\" to %s",
+  "command.mtgmc.deck.load.fail.format": "Unable to load deck from %s",
+  "command.mtgmc.deck.load.fail.empty": "Deck loaded from %s is empty"
 }
