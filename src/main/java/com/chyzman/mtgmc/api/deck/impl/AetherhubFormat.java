@@ -2,13 +2,11 @@ package com.chyzman.mtgmc.api.deck.impl;
 
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.deck.api.UriDeckFormat;
-import com.chyzman.mtgmc.util.EndecUtil;
 import com.chyzman.mtgmc.util.Procrastinator;
 import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.format.gson.GsonDeserializer;
-import io.wispforest.endec.impl.BuiltInEndecs;
 import io.wispforest.endec.impl.StructEndecBuilder;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +21,6 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.chyzman.mtgmc.MtgMc.*;
 
@@ -71,7 +68,7 @@ public class AetherhubFormat extends UriDeckFormat {
                         throw new RuntimeException("Failed to fetch deck list from Aetherhub: " + response.statusCode());
                     }
                     try {
-                        return parseDeckList(AetherHubResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)));
+                        return parseDeckList(AetherhubResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class)));
                     } catch (Exception e) {
                         LOGGER.error("Failed to parse deck list from Aetherhub", e);
                         throw new RuntimeException(e);
@@ -79,7 +76,7 @@ public class AetherhubFormat extends UriDeckFormat {
                 });
     }
 
-    private Procrastinator<List<CardIdentifier.ScryfallId>> parseDeckList(AetherHubResponse response) {
+    private Procrastinator<List<CardIdentifier.ScryfallId>> parseDeckList(AetherhubResponse response) {
         var cards = response.cards.stream()
                 .filter(card -> card.quantity != null)
                 .flatMap(card -> Collections.nCopies(card.quantity, card).stream())
@@ -92,12 +89,12 @@ public class AetherhubFormat extends UriDeckFormat {
                 .thenApply(thisIsVoidSoFuckYouInParticular -> cards.stream().map(mtgCardProcrastinator -> new CardIdentifier.ScryfallId(mtgCardProcrastinator.toCompletableFuture().resultNow().id())).toList());
     }
 
-    private record AetherHubResponse(
+    private record AetherhubResponse(
             @NotNull List<Card> cards
     ) {
-        public static final Endec<AetherHubResponse> ENDEC = StructEndecBuilder.of(
-                Card.ENDEC.listOf().fieldOf("convertedDeck", AetherHubResponse::cards),
-                AetherHubResponse::new
+        public static final Endec<AetherhubResponse> ENDEC = StructEndecBuilder.of(
+                Card.ENDEC.listOf().fieldOf("convertedDeck", AetherhubResponse::cards),
+                AetherhubResponse::new
         );
 
         private record Card(

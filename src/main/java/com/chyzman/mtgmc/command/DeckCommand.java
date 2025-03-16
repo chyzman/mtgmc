@@ -40,7 +40,7 @@ public class DeckCommand {
         var player = source.getPlayerOrThrow();
         futureDeck.thenAccept(deck -> {
             if (deck.isEmpty()) {
-                source.sendError(Text.translatable("command.mtgmc.deck.load.fail.empty", deckUrl));
+                source.sendError(Text.translatable("command.mtgmc.deck.load.fail.empty", deckUrl.toString()));
                 return;
             }
             var stack = DECK.getDefaultStack();

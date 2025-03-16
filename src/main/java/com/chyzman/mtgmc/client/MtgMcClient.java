@@ -2,6 +2,7 @@ package com.chyzman.mtgmc.client;
 
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.blockentity.render.CardBlockEntityRenderer;
+import com.chyzman.mtgmc.blockentity.render.CounterBlockEntityRenderer;
 import com.chyzman.mtgmc.cache.impl.ClientMtgCache;
 import com.chyzman.mtgmc.item.renderer.CardModelRenderer;
 import com.chyzman.mtgmc.network.MtgMcPackets;
@@ -19,6 +20,7 @@ public class MtgMcClient implements ClientModInitializer {
         MtgMcPackets.registerClient();
 
         BlockEntityRendererFactories.register(MtgMcBlockEntities.CARD, CardBlockEntityRenderer::new);
+        BlockEntityRendererFactories.register(MtgMcBlockEntities.COUNTER, CounterBlockEntityRenderer::new);
 
 
         ID_MAPPER.put(MtgMc.id("card"), CardModelRenderer.Unbaked.CODEC);

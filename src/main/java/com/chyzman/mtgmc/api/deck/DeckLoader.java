@@ -5,6 +5,7 @@ import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.deck.api.UriDeckFormat;
 import com.chyzman.mtgmc.api.deck.impl.AetherhubFormat;
 import com.chyzman.mtgmc.api.deck.impl.ArchidektFormat;
+import com.chyzman.mtgmc.api.deck.impl.DeckstatsFormat;
 import com.chyzman.mtgmc.util.Procrastinator;
 import com.mojang.logging.LogUtils;
 import net.minecraft.util.Identifier;
@@ -21,7 +22,8 @@ public class DeckLoader {
 
     private static final Map<Identifier, UriDeckFormat> URI_DECK_FORMATS = Map.of(
             MtgMc.id("aetherhub"), new AetherhubFormat(),
-            MtgMc.id("archidekt"), new ArchidektFormat()
+            MtgMc.id("archidekt"), new ArchidektFormat(),
+            MtgMc.id("deckstats"), new DeckstatsFormat()
     );
 
     public static Procrastinator<List<CardIdentifier.ScryfallId>> fetchDeckList(String input) {

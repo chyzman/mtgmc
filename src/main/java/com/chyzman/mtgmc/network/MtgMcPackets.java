@@ -3,7 +3,9 @@ package com.chyzman.mtgmc.network;
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.api.card.MtgCard;
+import com.chyzman.mtgmc.block.api.AttackInteractionReceiver;
 import com.chyzman.mtgmc.client.MtgMcClient;
+import com.chyzman.mtgmc.network.minecraft.C2S.C2SAttackInteraction;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SRequestCard;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SRequestCardAutoCompletions;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SRequestRulings;
@@ -17,6 +19,8 @@ import io.wispforest.owo.network.OwoNetChannel;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -43,6 +47,22 @@ public class MtgMcPackets {
         CHANNEL.registerClientboundDeferred(S2CSupplyRulings.class);
         CHANNEL.registerClientboundDeferred(S2CSupplyCardAutocompletions.class);
 
+        CHANNEL.registerServerbound(C2SAttackInteraction.class, (message, access) -> {
+            var player = access.player();
+            var world = player.getWorld();
+            BlockPos pos = message.hitResult().getBlockPos();
+
+            var state = world.getBlockState(pos);
+            if (!(state.getBlock() instanceof AttackInteractionReceiver receiver)) return;
+
+//            if (!CommonProtection.canInteractBlock(world, pos, player.getGameProfile(), player)) {
+//                // TODO: tell client interaction failed.
+//                return;
+//            }
+
+            receiver.onAttack(world, state, message.hitResult(), player);
+            player.swingHand(Hand.MAIN_HAND);
+        });
     }
 
     @Environment(EnvType.CLIENT)

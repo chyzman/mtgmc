@@ -3,6 +3,8 @@ package com.chyzman.mtgmc.blockentity;
 import com.chyzman.mtgmc.api.card.CardIdentifier;
 import com.chyzman.mtgmc.registry.MtgMcBlockEntities;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
+import com.chyzman.mtgmc.registry.MtgMcItems;
+import com.chyzman.mtgmc.util.PlayerUtil;
 import io.wispforest.owo.ops.WorldOps;
 import io.wispforest.owo.serialization.format.nbt.NbtDeserializer;
 import io.wispforest.owo.serialization.format.nbt.NbtSerializer;
@@ -22,6 +24,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class CardBlockEntity extends BlockEntity implements InteractableBlockEntity {
@@ -60,6 +63,18 @@ public class CardBlockEntity extends BlockEntity implements InteractableBlockEnt
     public ActionResult onUse(PlayerEntity player, Hand hand, BlockHitResult hit) {
         this.tapped = !this.tapped;
         this.markDirty();
+        return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public ActionResult onAttack(World world, PlayerEntity player, BlockHitResult hit) {
+        if (world.isClient) return ActionResult.SUCCESS;
+
+        var stack = MtgMcItems.CARD.getDefaultStack();
+        stack.set(MtgMcComponents.CARD, this.cardId);
+        PlayerUtil.shoveStackIntoHotbarNicely(player, stack);
+        world.removeBlock(hit.getBlockPos(), false);
+
         return ActionResult.SUCCESS;
     }
 

@@ -2,6 +2,7 @@ package com.chyzman.mtgmc.registry;
 
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.blockentity.CardBlockEntity;
+import com.chyzman.mtgmc.blockentity.CounterBlockEntity;
 import com.chyzman.mtgmc.item.CardItem;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityType;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -25,6 +26,12 @@ public class MtgMcBlockEntities {
             "card",
             CardBlockEntity::new,
             MtgMcBlocks.CARD
+    );
+
+    public static final BlockEntityType<CounterBlockEntity> COUNTER = register(
+            "counter",
+            CounterBlockEntity::new,
+            MtgMcBlocks.COUNTER
     );
 
     private static <T extends BlockEntity> BlockEntityType<T> register(String id, FabricBlockEntityTypeBuilder.Factory<T> factory, Block... blocks) {

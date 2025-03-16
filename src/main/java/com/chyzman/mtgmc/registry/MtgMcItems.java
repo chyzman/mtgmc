@@ -3,6 +3,7 @@ package com.chyzman.mtgmc.registry;
 import com.chyzman.mtgmc.MtgMc;
 import com.chyzman.mtgmc.item.CardItem;
 import com.chyzman.mtgmc.item.DeckItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.registry.RegistryKey;
@@ -26,6 +27,13 @@ public class MtgMcItems {
                     .maxCount(1)
                     .component(MtgMcComponents.DECK, new ArrayList<>()),
             DeckItem::new
+    );
+
+    public static final Item COUNTER = register(
+            "counter",
+            new Item.Settings()
+                    .maxCount(64),
+            settings -> new BlockItem(MtgMcBlocks.COUNTER, settings)
     );
 
     private static Item register(String id, Item.Settings settings, Function<Item.Settings, Item> factory) {

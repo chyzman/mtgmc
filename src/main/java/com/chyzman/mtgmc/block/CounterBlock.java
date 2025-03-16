@@ -2,6 +2,7 @@ package com.chyzman.mtgmc.block;
 
 import com.chyzman.mtgmc.block.api.AttackInteractionReceiver;
 import com.chyzman.mtgmc.blockentity.CardBlockEntity;
+import com.chyzman.mtgmc.blockentity.CounterBlockEntity;
 import com.chyzman.mtgmc.blockentity.InteractableBlockEntity;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
 import com.chyzman.mtgmc.registry.MtgMcItems;
@@ -27,15 +28,18 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CardBlock extends BlockWithEntity implements AttackInteractionReceiver {
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
-    public static final MapCodec<CardBlock> CODEC = createCodec(CardBlock::new);
+public class CounterBlock extends BlockWithEntity implements AttackInteractionReceiver {
+
+    public static final MapCodec<CounterBlock> CODEC = createCodec(CounterBlock::new);
 
     public static final EnumProperty<Direction> FACING = Properties.HORIZONTAL_FACING;
 
     public static final VoxelShape SHAPE = Block.createCuboidShape(0, 0, 0, 16, 10, 16);
 
-    public CardBlock(Settings settings) {
+    public CounterBlock(Settings settings) {
         super(settings);
 
         this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH));
@@ -65,13 +69,8 @@ public class CardBlock extends BlockWithEntity implements AttackInteractionRecei
     }
 
     @Override
-    protected BlockRenderType getRenderType(BlockState state) {
-        return BlockRenderType.INVISIBLE;
-    }
-
-    @Override
     public @Nullable BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new CardBlockEntity(pos, state);
+        return new CounterBlockEntity(pos, state);
     }
 
     @Override
@@ -82,12 +81,5 @@ public class CardBlock extends BlockWithEntity implements AttackInteractionRecei
     @Override
     public @NotNull ActionResult onAttack(World world, BlockState state, BlockHitResult hitResult, PlayerEntity player) {
         return InteractableBlockEntity.tryHandleAttack(world, hitResult.getBlockPos(), player, hitResult);
-    }
-
-    @Override
-    protected ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state, boolean includeData) {
-        var stack = MtgMcItems.CARD.getDefaultStack();
-        if (world.getBlockEntity(pos) instanceof CardBlockEntity cardBlockEntity) stack.set(MtgMcComponents.CARD, cardBlockEntity.cardId);
-        return stack;
     }
 }

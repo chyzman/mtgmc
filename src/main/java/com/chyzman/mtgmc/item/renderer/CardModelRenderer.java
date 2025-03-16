@@ -46,7 +46,7 @@ public class CardModelRenderer implements SpecialModelRenderer<Procrastinator<@N
 
     @Override
     public void render(
-            Procrastinator<@Nullable MtgCard> proCard,
+            Procrastinator<@Nullable MtgCard> futureCard,
             ModelTransformationMode modelTransformationMode,
             MatrixStack matrices,
             VertexConsumerProvider vertexConsumers,
@@ -58,27 +58,22 @@ public class CardModelRenderer implements SpecialModelRenderer<Procrastinator<@N
 
         Identifier image = LOADING_CARD;
 
-        var futureCard = proCard.toCompletableFuture();
-
-        if (futureCard != null && futureCard.isDone()) {
-            if (futureCard.isCompletedExceptionally() || futureCard.isCancelled() || futureCard.getNow(null) == null) {
-                image = UNKNOWN_CARD;
-            } else {
-                var card = futureCard.getNow(null);
-                if (card != null) image = CLIENT_CACHE.getImage(card).getNow(LOADING_CARD);
-            }
+        if (futureCard != null && futureCard.toCompletableFuture().isDone()) {
+            var future = futureCard.toCompletableFuture();
+            var card = future.resultNow();
+            image = card == null ? UNKNOWN_CARD : CLIENT_CACHE.getImage(card).getNow(LOADING_CARD);
         } else if (futureCard == null) {
             image = UNKNOWN_CARD;
         }
         if (image == null) image = UNKNOWN_CARD;
 
-        matrices.push();
+        var blockAtlas = image == LOADING_CARD || image == UNKNOWN_CARD;
 
-        var isUnknown = image == UNKNOWN_CARD || image == LOADING_CARD;
+        matrices.push();
 
         var entry = matrices.peek();
         var matrixStack = entry.getPositionMatrix();
-        var renderLayer = RenderLayer.getItemEntityTranslucentCull(isUnknown ? SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE : image);
+        var renderLayer = RenderLayer.getItemEntityTranslucentCull(blockAtlas ? SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE : image);
         var bufferBuilder = vertexConsumers.getBuffer(renderLayer);
 
         var minU = 0f;
@@ -86,7 +81,7 @@ public class CardModelRenderer implements SpecialModelRenderer<Procrastinator<@N
         var maxU = 1f;
         var maxV = 1f;
 
-        if (isUnknown) {
+        if (blockAtlas) {
             var sprite = client.getSpriteAtlas(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).apply(image);
             var width = (sprite.getMaxU() - sprite.getMinU()) / 16f;
             var height = (sprite.getMaxV() - sprite.getMinV()) / 16f;
