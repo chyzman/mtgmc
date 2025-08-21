@@ -1,7 +1,7 @@
 package com.chyzman.mtgmc.network.http.response;
 
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.impl.StructEndecBuilder;
 

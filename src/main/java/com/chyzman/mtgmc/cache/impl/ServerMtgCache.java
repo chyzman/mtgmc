@@ -1,9 +1,9 @@
 package com.chyzman.mtgmc.cache.impl;
 
 import com.chyzman.mtgmc.MtgMc;
-import com.chyzman.mtgmc.api.card.MtgCard;
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.ruling.Ruling;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.ruling.Ruling;
 import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.network.http.request.CardCollectionRequest;
 import com.chyzman.mtgmc.network.http.response.CardAutoCompletionsResponse;
@@ -27,7 +27,6 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.chyzman.mtgmc.MtgMc.GSON;

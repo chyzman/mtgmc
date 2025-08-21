@@ -1,10 +1,10 @@
 package com.chyzman.mtgmc.cache.api;
 
 import com.chyzman.mtgmc.MtgMc;
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.card.MtgCard;
-import com.chyzman.mtgmc.api.error.ScryfallError;
-import com.chyzman.mtgmc.api.ruling.Ruling;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.error.ScryfallError;
+import com.chyzman.mtgmc.api.scryfall.ruling.Ruling;
 import com.chyzman.mtgmc.util.Procrastinator;
 import com.google.common.cache.LoadingCache;
 import com.google.gson.JsonElement;
@@ -19,7 +19,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.MtgMc.GSON;
 

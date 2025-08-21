@@ -15,6 +15,8 @@ import static net.minecraft.client.render.item.model.special.SpecialModelTypes.I
 public class MtgMcClient implements ClientModInitializer {
     public static final ClientMtgCache CLIENT_CACHE = new ClientMtgCache();
 
+    public static float fovLerp = 0;
+
     @Override
     public void onInitializeClient() {
         MtgMcPackets.registerClient();

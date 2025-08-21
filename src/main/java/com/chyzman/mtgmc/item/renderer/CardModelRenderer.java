@@ -1,7 +1,7 @@
 package com.chyzman.mtgmc.item.renderer;
 
 import com.chyzman.mtgmc.MtgMc;
-import com.chyzman.mtgmc.api.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
 import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
 import com.chyzman.mtgmc.util.Procrastinator;
@@ -19,10 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.client.MtgMcClient.CLIENT_CACHE;
 

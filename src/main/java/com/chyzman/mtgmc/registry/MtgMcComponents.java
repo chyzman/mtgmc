@@ -1,6 +1,6 @@
 package com.chyzman.mtgmc.registry;
 
-import com.chyzman.mtgmc.api.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
 import io.wispforest.owo.registration.reflect.AutoRegistryContainer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;

@@ -1,19 +1,15 @@
 package com.chyzman.mtgmc.command;
 
-import com.chyzman.mtgmc.api.deck.DeckLoader;
+import com.chyzman.mtgmc.api.scryfall.deck.DeckLoader;
 import com.chyzman.mtgmc.command.api.URIArgumentType;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.command.argument.ArgumentTypes;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 
 import java.net.URI;
-import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.registry.MtgMcItems.DECK;
 import static net.minecraft.server.command.CommandManager.argument;

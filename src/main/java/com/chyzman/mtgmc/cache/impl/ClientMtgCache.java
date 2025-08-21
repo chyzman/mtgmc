@@ -1,10 +1,10 @@
 package com.chyzman.mtgmc.cache.impl;
 
 import com.chyzman.mtgmc.MtgMc;
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.card.CardImageStatus;
-import com.chyzman.mtgmc.api.card.MtgCard;
-import com.chyzman.mtgmc.api.ruling.Ruling;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.CardImageStatus;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.ruling.Ruling;
 import com.chyzman.mtgmc.cache.api.MtgCache;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SRequestCard;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SRequestCardAutoCompletions;
@@ -22,10 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.network.MtgMcPackets.CHANNEL;
 

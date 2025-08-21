@@ -1,7 +1,7 @@
 package com.chyzman.mtgmc.network.minecraft.S2C;
 
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.ruling.Ruling;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.ruling.Ruling;
 
 import java.util.List;
 

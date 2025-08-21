@@ -1,6 +1,6 @@
 package com.chyzman.mtgmc.command;
 
-import com.chyzman.mtgmc.api.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
 import com.chyzman.mtgmc.command.api.MtgMcSuggestionProviders;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
 import com.mojang.brigadier.arguments.IntegerArgumentType;

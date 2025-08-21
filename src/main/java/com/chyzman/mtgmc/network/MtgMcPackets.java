@@ -1,8 +1,8 @@
 package com.chyzman.mtgmc.network;
 
 import com.chyzman.mtgmc.MtgMc;
-import com.chyzman.mtgmc.api.card.CardIdentifier;
-import com.chyzman.mtgmc.api.card.MtgCard;
+import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.card.MtgCard;
 import com.chyzman.mtgmc.block.api.AttackInteractionReceiver;
 import com.chyzman.mtgmc.client.MtgMcClient;
 import com.chyzman.mtgmc.network.minecraft.C2S.C2SAttackInteraction;
@@ -21,8 +21,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.concurrent.CompletableFuture;
 
 import static com.chyzman.mtgmc.MtgMc.SERVER_CACHE;
 

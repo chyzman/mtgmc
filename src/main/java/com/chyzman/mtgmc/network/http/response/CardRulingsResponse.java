@@ -1,6 +1,6 @@
 package com.chyzman.mtgmc.network.http.response;
 
-import com.chyzman.mtgmc.api.ruling.Ruling;
+import com.chyzman.mtgmc.api.scryfall.ruling.Ruling;
 import io.wispforest.endec.Endec;
 import io.wispforest.endec.impl.StructEndecBuilder;
 import org.jetbrains.annotations.NotNull;
