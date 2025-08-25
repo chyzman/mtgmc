@@ -1,6 +1,7 @@
 package com.chyzman.mtgmc.registry;
 
 import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.deck.LoadedDeck;
 import io.wispforest.owo.registration.reflect.AutoRegistryContainer;
 import net.minecraft.component.ComponentType;
 import net.minecraft.registry.Registries;
@@ -14,8 +15,8 @@ public class MtgMcComponents implements AutoRegistryContainer<ComponentType<?>> 
             .endec(CardIdentifier.ScryfallId.ENDEC)
             .build();
 
-    public static final ComponentType<List<CardIdentifier.ScryfallId>> DECK = ComponentType.<List<CardIdentifier.ScryfallId>>builder()
-            .endec(CardIdentifier.ScryfallId.ENDEC.listOf())
+    public static final ComponentType<LoadedDeck> DECK = ComponentType.<LoadedDeck>builder()
+            .endec(LoadedDeck.ENDEC)
             .build();
 
     @Override

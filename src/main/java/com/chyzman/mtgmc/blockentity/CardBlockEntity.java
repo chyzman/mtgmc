@@ -2,9 +2,10 @@ package com.chyzman.mtgmc.blockentity;
 
 import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
 import com.chyzman.mtgmc.blockentity.render.CardBlockEntityRenderer;
+import com.chyzman.mtgmc.client.MtgMcClient;
 import com.chyzman.mtgmc.registry.MtgMcBlockEntities;
 import com.chyzman.mtgmc.registry.MtgMcComponents;
-import com.chyzman.mtgmc.screen.CardScreen;
+import com.chyzman.mtgmc.ui.screen.CardScreen;
 import io.wispforest.owo.ops.WorldOps;
 import io.wispforest.owo.serialization.format.nbt.NbtDeserializer;
 import io.wispforest.owo.serialization.format.nbt.NbtSerializer;
@@ -34,6 +35,7 @@ public class CardBlockEntity extends BlockEntity implements InteractableBlockEnt
     public CardIdentifier.ScryfallId cardId;
     public boolean tapped;
 
+    @Environment(EnvType.CLIENT) public boolean firstTick = true;
     @Environment(EnvType.CLIENT) public float tappedness;
     @Environment(EnvType.CLIENT) public float lookedAtness;
 
@@ -73,11 +75,16 @@ public class CardBlockEntity extends BlockEntity implements InteractableBlockEnt
 
     @Override
     public ActionResult onAttack(World world, PlayerEntity player, BlockHitResult hit) {
+        if (player.isSneaking()) return ActionResult.PASS;
         if (world.isClient) {
+            var blockEntity = world.getBlockEntity(this.getPos());
+            if (!(blockEntity instanceof CardBlockEntity cardBlockEntity)) return ActionResult.FAIL;
+            if (cardBlockEntity.cardId == null) return ActionResult.FAIL;
+            var card = MtgMcClient.CLIENT_CACHE.getCard(cardBlockEntity.cardId).getNow(null);
+            if (card == null) return ActionResult.FAIL;
+
             CardBlockEntityRenderer.clickedPos = CardBlockEntityRenderer.clickedPos == this.getPos() ? null : this.getPos();
-            if (CardBlockEntityRenderer.clickedPos != null) {
-                MinecraftClient.getInstance().setScreen(new CardScreen(this.getPos()));
-            }
+            if (CardBlockEntityRenderer.clickedPos != null) MinecraftClient.getInstance().setScreen(new CardScreen(card, this.getPos()));
             return ActionResult.SUCCESS;
         }
 

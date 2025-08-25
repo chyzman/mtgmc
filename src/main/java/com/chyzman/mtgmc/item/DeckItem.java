@@ -20,22 +20,30 @@ public class DeckItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (!stack.contains(MtgMcComponents.DECK) || stack.get(MtgMcComponents.DECK) == null) return;
-        tooltip.add(Text.translatable("item.mtgmc.deck_size", stack.get(MtgMcComponents.DECK).size()));
+        var deck = stack.get(MtgMcComponents.DECK);
+        if (deck == null) return;
+        tooltip.add(Text.translatable("item.mtgmc.deck_size", deck.sections().stream().mapToInt(s -> s.cards().size()).sum()));
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (!stack.contains(MtgMcComponents.DECK) || stack.get(MtgMcComponents.DECK) == null || stack.get(MtgMcComponents.DECK).isEmpty()) {
-            user.getInventory().removeOne(stack);
-            return ActionResult.PASS;
-        }
+    public Text getName(ItemStack stack) {
         var deck = stack.get(MtgMcComponents.DECK);
-        var cardStack = MtgMcItems.CARD.getDefaultStack();
-        cardStack.set(MtgMcComponents.CARD, deck.removeFirst());
-        user.getInventory().offerOrDrop(cardStack);
-        if (deck.isEmpty()) user.getInventory().removeOne(stack);
-        return ActionResult.SUCCESS;
+        if (deck == null) return super.getName(stack);
+        return Text.literal(deck.name());
     }
+
+    //    @Override
+//    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+//        ItemStack stack = user.getStackInHand(hand);
+//        if (!stack.contains(MtgMcComponents.DECK) || stack.get(MtgMcComponents.DECK) == null || stack.get(MtgMcComponents.DECK).isEmpty()) {
+//            user.getInventory().removeOne(stack);
+//            return ActionResult.PASS;
+//        }
+//        var deck = stack.get(MtgMcComponents.DECK);
+//        var cardStack = MtgMcItems.CARD.getDefaultStack();
+//        cardStack.set(MtgMcComponents.CARD, deck.removeFirst());
+//        user.getInventory().offerOrDrop(cardStack);
+//        if (deck.isEmpty()) user.getInventory().removeOne(stack);
+//        return ActionResult.SUCCESS;
+//    }
 }

@@ -13,7 +13,7 @@ import com.chyzman.mtgmc.network.minecraft.S2C.S2CSupplyCard;
 import com.chyzman.mtgmc.network.minecraft.S2C.S2CSupplyCardAutocompletions;
 import com.chyzman.mtgmc.network.minecraft.S2C.S2CSupplyRulings;
 import com.chyzman.mtgmc.network.minecraft.S2C.S2CViewDump;
-import com.chyzman.mtgmc.screen.DumpScreen;
+import com.chyzman.mtgmc.ui.screen.DumpScreen;
 import com.chyzman.mtgmc.util.Procrastinator;
 import io.wispforest.owo.network.OwoNetChannel;
 import net.fabricmc.api.EnvType;

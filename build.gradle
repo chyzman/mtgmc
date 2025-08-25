@@ -14,6 +14,7 @@ base {
 repositories {
     maven { url 'https://maven.wispforest.io' }
     mavenCentral()
+    mavenLocal()
 }
 
 dependencies {

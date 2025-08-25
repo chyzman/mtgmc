@@ -1,6 +1,7 @@
 package com.chyzman.mtgmc.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.*;
 import java.util.function.*;
 
@@ -252,5 +253,13 @@ public class Procrastinator<T> implements CompletionStage<T> {
 
     public T getNow(T valueIfAbsent) {
         return future.getNow(valueIfAbsent);
+    }
+
+    public static Procrastinator<Void> allOf(CompletionStage<?>... cfs) {
+        return new Procrastinator<>(CompletableFuture.allOf(Arrays.stream(cfs).map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new)));
+    }
+
+    public static Procrastinator<Void> allOf(Collection<? extends CompletionStage<?>> cfs) {
+        return new Procrastinator<>(CompletableFuture.allOf(cfs.stream().map(CompletionStage::toCompletableFuture).toArray(CompletableFuture[]::new)));
     }
 }

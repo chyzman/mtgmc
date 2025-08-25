@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ModelTransformationMode;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
@@ -33,14 +34,14 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
 
     @Override
     protected void render(
-            CardBlockEntity entity,
-            float tickDelta,
-            float frameDelta,
-            long time,
-            MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
-            int light,
-            int overlay
+        CardBlockEntity entity,
+        float tickDelta,
+        float frameDelta,
+        long time,
+        MatrixStack matrices,
+        VertexConsumerProvider vertexConsumers,
+        int light,
+        int overlay
     ) {
         matrices.push();
 
@@ -51,9 +52,9 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
 
         Vec3d targetPos = Vec3d.ZERO;
         Quaternionf targetRot;
-        Vec3d targetScale = new Vec3d(1, 1, 1);
+        Vec3d targetScale;
 
-        entity.tappedness += Delta.compute(entity.tappedness, entity.tapped ? 1f : 0f, frameDelta * 0.5f);
+        entity.tappedness += Delta.compute(entity.tappedness, entity.tapped ? 1f : 0f, entity.firstTick ? 1 : frameDelta * 0.5f);
 
         if (selected) {
 //            if (new Vector3f(0, 0, -1).rotate(camera.getRotation()).distance(entity.getPos().toCenterPos().subtract(camera.getPos()).normalize().toVector3f()) > 1f) {
@@ -69,17 +70,18 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
             targetScale = new Vec3d(scale, scale, scale);
         } else {
             targetRot = entity.getCachedState().get(CardBlock.FACING).getRotationQuaternion()
-                    .rotateX((float) -Math.toRadians(5));
+                .rotateX((float) -Math.toRadians(5));
 
             var scale = MathHelper.lerp(entity.tappedness, 1f, 0.7f);
             targetScale = new Vec3d(scale, scale, scale);
         }
 
-        targetRot.rotateZ(entity.tappedness * (float) -Math.PI/2f);
+        targetRot.rotateZ(entity.tappedness * (float) -Math.PI / 2f);
 
-        entity.position = MathHelper.lerp(frameDelta * 0.25f, entity.position, targetPos);
-        entity.rotation = entity.rotation.nlerp(targetRot, frameDelta * 0.25f);
-        entity.scale = MathHelper.lerp(frameDelta * 0.25f, entity.scale, targetScale);
+        var delta = entity.firstTick ? 1 : frameDelta * 0.25f;
+            entity.position = MathHelper.lerp(delta, entity.position, targetPos);
+        entity.rotation = entity.rotation.nlerp(targetRot, delta);
+        entity.scale = MathHelper.lerp(delta, entity.scale, targetScale);
 
         matrices.translate(0.5, 0.5, 0.5);
 
@@ -88,22 +90,6 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
         matrices.scale((float) entity.scale.x, (float) entity.scale.y, (float) entity.scale.z);
 
         matrices.scale(0.65f, 0.65f, 0.65f);
-
-        var stack = new ItemStack(MtgMcItems.CARD);
-        stack.set(MtgMcComponents.CARD, entity.cardId);
-
-        client.getItemRenderer().renderItem(
-                stack,
-                ModelTransformationMode.FIXED,
-                light,
-                overlay,
-                matrices,
-                vertexConsumers,
-                entity.getWorld(),
-                0
-        );
-
-        matrices.pop();
 
 //        var lookedAt = !client.options.hudHidden && client.crosshairTarget.getType() == BlockHitResult.Type.BLOCK && client.crosshairTarget.getPos().squaredDistanceTo(entity.getPos().toCenterPos()) < 0.5f;
 //        entity.lookedAtness += Delta.compute(entity.lookedAtness, selected ? 1f : 0f, frameDelta * 0.25f);
@@ -137,16 +123,36 @@ public class CardBlockEntityRenderer extends MtgMcBlockEntityRenderer<CardBlockE
 //        matrices.scale(scale, scale, scale);
 
 
-//        RANDOM.setSeed(entity.getPos().hashCode());
-//
-//        matrices.translate(0, MathHelper.sin((time + RANDOM.nextInt(1,10000)) / 2500f) * 0.01f + (MathHelper.lerp(entity.lookedAtness, 0, 0.4f)), 0);
-//
-//        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin((time + RANDOM.nextInt(1,10000)) / 2100f)));
-//        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.cos((time + RANDOM.nextInt(1,10000)) / 2300f)));
-//
+        if (!selected) {
+            RANDOM.setSeed(entity.getPos().hashCode());
+
+            matrices.translate(0, MathHelper.sin((time + RANDOM.nextInt(1, 10000)) / 2500f) * 0.01f + (MathHelper.lerp(entity.lookedAtness, 0, 0.4f)), 0);
+
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.sin((time + RANDOM.nextInt(1, 10000)) / 2100f)));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(MathHelper.cos((time + RANDOM.nextInt(1, 10000)) / 2300f)));
+        }
+
 //        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(MathHelper.lerp(entity.tappedness, 85f, 90f)));
 //
 //        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-MathHelper.lerp(entity.tappedness, 0f, 90f)));
 
+
+        var stack = new ItemStack(MtgMcItems.CARD);
+        stack.set(MtgMcComponents.CARD, entity.cardId);
+
+        client.getItemRenderer().renderItem(
+            stack,
+            ModelTransformationMode.FIXED,
+            light,
+            overlay,
+            matrices,
+            vertexConsumers,
+            entity.getWorld(),
+            0
+        );
+
+        matrices.pop();
+
+        entity.firstTick = false;
     }
 }

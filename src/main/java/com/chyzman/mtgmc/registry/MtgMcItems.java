@@ -25,7 +25,7 @@ public class MtgMcItems {
             "deck",
             new Item.Settings()
                     .maxCount(1)
-                    .component(MtgMcComponents.DECK, new ArrayList<>()),
+                    .component(MtgMcComponents.DECK, null),
             DeckItem::new
     );
 

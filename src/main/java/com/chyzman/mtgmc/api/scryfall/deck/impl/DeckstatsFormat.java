@@ -1,11 +1,14 @@
 package com.chyzman.mtgmc.api.scryfall.deck.impl;
 
 import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.deck.LoadedDeck;
 import com.chyzman.mtgmc.api.scryfall.deck.api.UriDeckFormat;
 import com.chyzman.mtgmc.util.EndecUtil;
 import com.chyzman.mtgmc.util.Procrastinator;
+import com.google.gson.JsonElement;
 import com.mojang.logging.LogUtils;
 import io.wispforest.endec.Endec;
+import io.wispforest.endec.format.gson.GsonDeserializer;
 import io.wispforest.endec.impl.BuiltInEndecs;
 import io.wispforest.endec.impl.StructEndecBuilder;
 import net.minecraft.util.Util;
@@ -16,10 +19,12 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.chyzman.mtgmc.MtgMc.CLIENT;
+import static com.chyzman.mtgmc.MtgMc.GSON;
 
 public class DeckstatsFormat extends UriDeckFormat {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -32,9 +37,9 @@ public class DeckstatsFormat extends UriDeckFormat {
     }
 
     @Override
-    public Procrastinator<List<CardIdentifier.ScryfallId>> load(String input) {
+    public Procrastinator<LoadedDeck> load(String input) {
         var matcher = DECKSTATS_URL_PATTERN.matcher(input);
-        if (!matcher.matches()) return Procrastinator.procrastinated(List.of());
+        if (!matcher.matches()) throw new IllegalArgumentException("Invalid Deckstats URL: " + input);
         var ownerId = matcher.group(1);
         var deckId = matcher.group(2);
         var request = HttpRequest
@@ -52,14 +57,12 @@ public class DeckstatsFormat extends UriDeckFormat {
                 }, Util.getDownloadWorkerExecutor().named("fetchDeckstatsDeckList"))
                 .thenExcept(throwable -> LOGGER.error("Failed to fetch deck list from Deckstats", throwable))
                 .thenCompose(response -> {
-                    if (response.statusCode() != 200) {
-                        throw new RuntimeException("Failed to fetch deck list from Deckstats: " + response.statusCode());
-                    }
+                    if (response.statusCode() != 200) throw new RuntimeException("Failed to fetch deck list from Deckstats: " + response.statusCode());
                     LOGGER.info("Deckstats response: {}", response.body());
 
-                    return Procrastinator.procrastinated(List.of());
+                    throw new UnsupportedOperationException("DeckstatsFormat not yet implemented");
 
-//                    return CompletableFuture.completedFuture(parseDeckList(ArchidektResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class))));
+//                    return CompletableFuture.completedFuture(parseDeckList(DeckstatsResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class))));
                 });
     }
 

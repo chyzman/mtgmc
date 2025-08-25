@@ -1,4 +1,4 @@
-package com.chyzman.mtgmc.screen;
+package com.chyzman.mtgmc.ui.screen;
 
 import io.wispforest.owo.ui.base.BaseOwoScreen;
 import io.wispforest.owo.ui.component.Components;

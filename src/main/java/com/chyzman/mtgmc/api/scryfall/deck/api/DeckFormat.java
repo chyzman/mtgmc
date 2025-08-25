@@ -1,13 +1,12 @@
 package com.chyzman.mtgmc.api.scryfall.deck.api;
 
-import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.deck.LoadedDeck;
 import com.chyzman.mtgmc.util.Procrastinator;
-
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class DeckFormat {
 
     public abstract boolean inputValid(String input);
 
-    public abstract Procrastinator<List<CardIdentifier.ScryfallId>> load(String input);
+    public abstract Procrastinator<LoadedDeck> load(String input);
 }

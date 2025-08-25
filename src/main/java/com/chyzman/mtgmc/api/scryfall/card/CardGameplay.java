@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface CardGameplay {
 
@@ -42,7 +43,7 @@ public interface CardGameplay {
     default List<String> keywords() {return cardGameplayData().keywords();}
 
     @NotNull
-    default CardLegalities legalities() {return cardGameplayData().legalities();}
+    default Map<String, CardLegality> legalities() {return cardGameplayData().legalities();}
 
     @Nullable
     default String lifeModifier() {return cardGameplayData().lifeModifier();}
@@ -87,7 +88,7 @@ public interface CardGameplay {
             Endec.INT.optionalFieldOf("edhrec_rank", CardGameplay::edhrecRank, (Integer) null),
             Endec.STRING.optionalFieldOf("hand_modifier", CardGameplay::handModifier, (String) null),
             Endec.STRING.listOf().fieldOf("keywords", CardGameplay::keywords),
-            CardLegalities.ENDEC.fieldOf("legalities", CardGameplay::legalities),
+            CardLegality.ENDEC.mapOf().fieldOf("legalities", CardGameplay::legalities),
             Endec.STRING.optionalFieldOf("life_modifier", CardGameplay::lifeModifier, (String) null),
             Endec.STRING.optionalFieldOf("loyalty", CardGameplay::loyalty, (String) null),
             Endec.STRING.optionalFieldOf("mana_cost", CardGameplay::manaCost, (String) null),
@@ -115,7 +116,7 @@ public interface CardGameplay {
             @Nullable Integer edhrecRank,
             @Nullable String handModifier,
             @NotNull List<String> keywords,
-            @NotNull CardLegalities legalities,
+            @NotNull Map<String, CardLegality> legalities,
             @Nullable String lifeModifier,
             @Nullable String loyalty,
             @Nullable String manaCost,

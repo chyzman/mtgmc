@@ -1,6 +1,7 @@
 package com.chyzman.mtgmc.api.scryfall.deck.impl;
 
 import com.chyzman.mtgmc.api.scryfall.card.CardIdentifier;
+import com.chyzman.mtgmc.api.scryfall.deck.LoadedDeck;
 import com.chyzman.mtgmc.api.scryfall.deck.api.UriDeckFormat;
 import com.chyzman.mtgmc.util.EndecUtil;
 import com.chyzman.mtgmc.util.Procrastinator;
@@ -36,75 +37,97 @@ public class ArchidektFormat extends UriDeckFormat {
     }
 
     @Override
-    public Procrastinator<List<CardIdentifier.ScryfallId>> load(String input) {
+    public Procrastinator<LoadedDeck> load(String input) {
         var matcher = ARCHIDETK_URL_PATTERN.matcher(input);
-        if (!matcher.matches()) return Procrastinator.procrastinated(List.of());
+        if (!matcher.matches()) throw new IllegalArgumentException("Invalid Archidekt URL: " + input);
+
         var deckId = matcher.group(1);
         var request = HttpRequest
-                .newBuilder()
-                .uri(URI.create("https://archidekt.com/api/decks/" + deckId + "/"))
-                .build();
+            .newBuilder()
+            .uri(URI.create("https://archidekt.com/api/decks/" + deckId + "/"))
+            .build();
 
-        return Procrastinator.supplyAsync(() -> {
+        return Procrastinator.supplyAsync(
+                () -> {
                     try {
                         return CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
                     } catch (Exception e) {
                         LOGGER.error("Failed to fetch deck list from Archidekt", e);
                         throw new RuntimeException(e);
                     }
-                }, Util.getDownloadWorkerExecutor().named("fetchArchidektDeckList"))
-                .thenExcept(throwable -> LOGGER.error("Failed to fetch deck list from Archidekt", throwable))
-                .thenCompose(response -> {
-                    if (response.statusCode() != 200) {
-                        throw new RuntimeException("Failed to fetch deck list from Archidekt: " + response.statusCode());
-                    }
-                    return CompletableFuture.completedFuture(parseDeckList(ArchidektResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class))));
-                });
+                }, Util.getDownloadWorkerExecutor().named("fetchArchidektDeckList")
+            )
+            .thenExcept(throwable -> LOGGER.error("Failed to fetch deck list from Archidekt", throwable))
+            .thenCompose(response -> {
+                if (response.statusCode() != 200) {
+                    throw new RuntimeException("Failed to fetch deck list from Archidekt: " + response.statusCode());
+                }
+                return CompletableFuture.completedFuture(parseDeckList(ArchidektResponse.ENDEC.decodeFully(GsonDeserializer::of, GSON.fromJson(response.body(), JsonElement.class))));
+            });
     }
 
-    private List<CardIdentifier.ScryfallId> parseDeckList(ArchidektResponse response) {
-        var categories = response.categories().stream()
-                .filter(ArchidektResponse.Category::includedInDeck)
-                .map(ArchidektResponse.Category::name)
-                .collect(Collectors.toSet());
+    private LoadedDeck parseDeckList(ArchidektResponse response) {
+        var categories = new HashMap<ArchidektResponse.Category, List<LoadedDeck.DeckCard>>();
 
-        return response.cards.stream()
-                .filter(card -> card.categories().stream().anyMatch(categories::contains))
-                .flatMap(card -> Collections.nCopies(card.quantity(), new CardIdentifier.ScryfallId(card.uid())).stream())
+        for (var card : response.cards()) {
+            var id = new CardIdentifier.ScryfallId(card.uid());
+            var deckCard = new LoadedDeck.DeckCard(id, card.quantity());
+            var cardCategories = response.categories().stream()
+                .filter(category -> card.categories().contains(category.name()))
                 .toList();
+            if (cardCategories.isEmpty()) {
+                categories.computeIfAbsent(new ArchidektResponse.Category("Unknown", false), c -> new ArrayList<>()).add(deckCard);
+            } else {
+                for (var category : cardCategories) categories.computeIfAbsent(category, c -> new ArrayList<>()).add(deckCard);
+            }
+        }
+
+        return new LoadedDeck(
+            response.name(),
+            categories.entrySet().stream()
+                .map(entry -> new LoadedDeck.Section(
+                    entry.getKey().name(),
+                    entry.getValue(),
+                    entry.getKey().includedInDeck,
+                    LoadedDeck.Section.guessIfAuxiliary(entry.getKey().name())
+                ))
+                .toList()
+        );
     }
 
     private record ArchidektResponse(
-            @NotNull List<Card> cards,
-            @NotNull List<Category> categories
+        @NotNull String name,
+        @NotNull List<Card> cards,
+        @NotNull List<Category> categories
     ) {
         public static final Endec<ArchidektResponse> ENDEC = StructEndecBuilder.of(
-                Card.ENDEC.listOf().fieldOf("cards", ArchidektResponse::cards),
-                Category.ENDEC.listOf().fieldOf("categories", ArchidektResponse::categories),
-                ArchidektResponse::new
+            Endec.STRING.fieldOf("name", ArchidektResponse::name),
+            Card.ENDEC.listOf().fieldOf("cards", ArchidektResponse::cards),
+            Category.ENDEC.listOf().fieldOf("categories", ArchidektResponse::categories),
+            ArchidektResponse::new
         );
 
         public record Category(
-                @NotNull String name,
-                boolean includedInDeck
+            @NotNull String name,
+            boolean includedInDeck
         ) {
             public static final Endec<Category> ENDEC = StructEndecBuilder.of(
-                    Endec.STRING.fieldOf("name", Category::name),
-                    Endec.BOOLEAN.fieldOf("includedInDeck", Category::includedInDeck),
-                    Category::new
+                Endec.STRING.fieldOf("name", Category::name),
+                Endec.BOOLEAN.fieldOf("includedInDeck", Category::includedInDeck),
+                Category::new
             );
         }
 
         public record Card(
-                @NotNull UUID uid,
-                int quantity,
-                @NotNull Set<String> categories
+            @NotNull UUID uid,
+            int quantity,
+            @NotNull Set<String> categories
         ) {
             public static final Endec<Card> ENDEC = StructEndecBuilder.of(
-                    EndecUtil.structifyEndec("uid", BuiltInEndecs.UUID).fieldOf("card", Card::uid),
-                    Endec.INT.fieldOf("quantity", Card::quantity),
-                    Endec.STRING.setOf().optionalFieldOf("categories", Card::categories, HashSet::new),
-                    Card::new
+                EndecUtil.structifyEndec("uid", BuiltInEndecs.UUID).fieldOf("card", Card::uid),
+                Endec.INT.fieldOf("quantity", Card::quantity),
+                Endec.STRING.setOf().optionalFieldOf("categories", Card::categories, HashSet::new),
+                Card::new
             );
         }
     }

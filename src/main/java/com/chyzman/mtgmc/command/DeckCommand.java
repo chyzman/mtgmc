@@ -35,10 +35,10 @@ public class DeckCommand {
         if (futureDeck == null) throw UNABLE_TO_LOAD_DECK.create(deckUrl.toString());
         var player = source.getPlayerOrThrow();
         futureDeck.thenAccept(deck -> {
-            if (deck.isEmpty()) {
-                source.sendError(Text.translatable("command.mtgmc.deck.load.fail.empty", deckUrl.toString()));
-                return;
-            }
+//            if (deck == null) {
+//                source.sendError(Text.translatable("command.mtgmc.deck.load.fail.empty", deckUrl.toString()));
+//                return;
+//            }
             var stack = DECK.getDefaultStack();
             stack.set(MtgMcComponents.DECK, deck);
             player.getInventory().offerOrDrop(stack);
